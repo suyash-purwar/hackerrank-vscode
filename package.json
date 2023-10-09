@@ -10,22 +10,47 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./extension.js",
+  "main": "./out/extension.js",
   "contributes": {
-    "commands": [{
-      "command": "hackerrank-vscode.helloWorld",
-      "title": "Hello World"
-    }]
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hackerrank-vscode",
+          "title": "Hackerrank",
+          "icon": "resources/icon.png"
+        }
+      ]
+    },
+    "views": {
+      "hackerrank-vscode": [
+        {
+          "id": "challenges",
+          "name": "Challenges",
+          "contextualTitle": "Challenges"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "hackerrank-vscode.helloWorld",
+        "title": "Hello World"
+      }
+    ]
   },
   "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "node ./test/runTest.js"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
     "@types/vscode": "^1.83.0",
     "@types/mocha": "^10.0.2",
     "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
     "eslint": "^8.50.0",
     "glob": "^10.3.3",
     "mocha": "^10.2.0",
