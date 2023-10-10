@@ -3,15 +3,8 @@ import * as vscode from "vscode";
 import Authenticate from "./modules/Authentication";
 import ChallengeProvider from "./modules/ChallengesProvider";
 
-export function activate(context: vscode.ExtensionContext) {
-  const loggedIn = false;
-  if (loggedIn) {
-    vscode.window.registerTreeDataProvider(
-      "challenges",
-      new ChallengeProvider()
-    );
-  }
-
+export async function activate(context: vscode.ExtensionContext) {
+  // * Add subscriptions
   context.subscriptions.push(
     vscode.commands.registerCommand("hackerrank-vscode.helloWorld", () => {
       vscode.window.showInformationMessage(
@@ -21,23 +14,18 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("hackerrank-vscode.signin", async () => {
-      const email = await vscode.window.showInputBox({
-        ignoreFocusOut: true,
-        title: "Email Address:",
-        prompt: "Enter your email address",
-      });
-      const password = await vscode.window.showInputBox({
-        ignoreFocusOut: true,
-        title: "Password",
-        prompt: "Enter your password",
-        password: true,
-      });
-
-      // Make a call to API
-      console.log(email, password);
-    })
+    vscode.commands.registerCommand(
+      "hackerrank-vscode.signin",
+      Authenticate.login
+    )
   );
+
+  // * Check login status and show appropriate TreeView
+  const authStatus = await Authenticate.isLoggedIn();
+
+  if (authStatus.status) {
+    await ChallengeProvider.getChallenges();
+  }
 }
 
 export function deactivate() {}

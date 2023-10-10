@@ -5,6 +5,12 @@ export default class ChallengeProvider
 {
   constructor() {}
 
+  static async getChallenges() {
+    vscode.window.createTreeView("challenges", {
+      treeDataProvider: new ChallengeProvider(),
+    });
+  }
+
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
     return element;
   }
