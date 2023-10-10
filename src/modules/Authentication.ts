@@ -6,7 +6,6 @@ export default class Authentication
   constructor() {}
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
-    console.log(element);
     return element;
   }
 

@@ -25,15 +25,24 @@
       "hackerrank-vscode": [
         {
           "id": "challenges",
-          "name": "Challenges",
-          "contextualTitle": "Challenges"
+          "name": "Challenges"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "challenges",
+        "contents": "Sign in to your Hackerrank account and start hacking \n[Sign in to Hackerrank](command:hackerrank-vscode.signin)"
+      }
+    ],
     "commands": [
       {
         "command": "hackerrank-vscode.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "hackerrank-vscode.signin",
+        "title": "Hackerrank Sign In"
       }
     ]
   },
