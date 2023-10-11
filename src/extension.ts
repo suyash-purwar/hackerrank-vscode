@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const authStatus = await Authenticate.isLoggedIn();
 
   if (authStatus.status) {
-    await ChallengeProvider.getChallenges();
+    ChallengeProvider.getChallenges();
   }
 }
 

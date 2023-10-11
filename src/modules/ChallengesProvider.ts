@@ -1,17 +1,17 @@
 import * as vscode from "vscode";
+import { Challenge } from "./Challenge";
 
-class Tracks extends vscode.TreeItem {
-  constructor(
-    trackId: number,
-    trackName: string,
-    collapsibleState: vscode.TreeItemCollapsibleState
-  ) {
-    super(trackName, collapsibleState);
+class Track extends vscode.TreeItem {
+  readonly type: string = "track";
+
+  constructor(trackId: number, trackName: string) {
+    super(trackName, vscode.TreeItemCollapsibleState.Collapsed);
     this.id = trackId.toString();
   }
 }
 
 class TrackChallenge extends vscode.TreeItem {
+  readonly type: string = "challenge";
   constructor(challengeId: number, challengeName: string) {
     super(challengeName);
     this.id = challengeId.toString();
@@ -21,19 +21,30 @@ class TrackChallenge extends vscode.TreeItem {
 export default class ChallengeProvider
   implements vscode.TreeDataProvider<vscode.TreeItem>
 {
-  constructor() {}
-
   static async getChallenges() {
-    vscode.window.createTreeView("challenges", {
+    const challengesTreeView = vscode.window.createTreeView("challenges", {
       treeDataProvider: new ChallengeProvider(),
+    });
+
+    challengesTreeView.onDidChangeSelection(async (event) => {
+      const selectedItem = event.selection[0] as Track;
+
+      if (selectedItem.type === "track") return;
+
+      if (selectedItem) {
+        // Render pains
+        vscode.window.showInformationMessage(`${selectedItem.label}`);
+        await Challenge.renderChallenge(
+          selectedItem.id as string,
+          selectedItem.label as string
+        );
+      }
     });
   }
 
   // getTracks(): Promise<Tracks[]> {}
 
   // getTrackChallenges(trackId: number): Promise<TrackChallenge[]> {}
-
-  // getChallenge(challengeId: number): Promise<vscode.TreeItem[]> {}
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
     console.log(element);
@@ -43,38 +54,72 @@ export default class ChallengeProvider
   getChildren(
     element?: vscode.TreeItem | undefined
   ): vscode.ProviderResult<vscode.TreeItem[]> {
-    const javascript = new vscode.TreeItem(
-      "JavaScript",
-      vscode.TreeItemCollapsibleState.Collapsed
-    );
-    const python = new vscode.TreeItem(
-      "Python",
-      vscode.TreeItemCollapsibleState.Collapsed
-    );
-    const alogrithms = new vscode.TreeItem(
-      "Algorithms",
-      vscode.TreeItemCollapsibleState.Collapsed
+    const javascript = new Track(10, "JavaScript");
+    const python = new Track(20, "Python");
+    const alogrithms = new Track(30, "Algorithms");
+
+    const javascriptChallenges = [
+      {
+        id: 1,
+        name: "Coercion for beginners",
+      },
+      {
+        id: 2,
+        name: "Currying Patterns",
+      },
+      {
+        id: 3,
+        name: "Tower of Hanoi",
+      },
+    ];
+    const pythonChallenges = [
+      {
+        id: 4,
+        name: "For-loops",
+      },
+      {
+        id: 5,
+        name: "Operator Overloading",
+      },
+      {
+        id: 6,
+        name: "Armstrong Number",
+      },
+    ];
+    const algorithmsChallenges = [
+      {
+        id: 7,
+        name: "Bubble Sort",
+      },
+      {
+        id: 8,
+        name: "Bubble Sort using Recursion",
+      },
+      {
+        id: 9,
+        name: "Quick Sort",
+      },
+    ];
+
+    const javascriptChallengeList = javascriptChallenges.map(
+      (ch) => new TrackChallenge(ch.id, ch.name)
     );
 
-    switch (element?.label) {
-      case "JavaScript":
-        return [
-          new vscode.TreeItem("Coercion for beginners"),
-          new vscode.TreeItem("Currying Patters"),
-          new vscode.TreeItem("Tower of Hanoi"),
-        ];
-      case "Python":
-        return [
-          new vscode.TreeItem("For-loops"),
-          new vscode.TreeItem("Operator Overloading"),
-          new vscode.TreeItem("Armstrong Number"),
-        ];
-      case "Algorithms":
-        return [
-          new vscode.TreeItem("Bubble Sort"),
-          new vscode.TreeItem("Bubble Sort using Recursion"),
-          new vscode.TreeItem("Quick Sort"),
-        ];
+    const pythonChallengeList = pythonChallenges.map(
+      (ch) => new TrackChallenge(ch.id, ch.name)
+    );
+
+    const algorithmsChallengeList = algorithmsChallenges.map(
+      (ch) => new TrackChallenge(ch.id, ch.name)
+    );
+
+    switch (element?.id) {
+      case "10":
+        return javascriptChallengeList;
+      case "20":
+        return pythonChallengeList;
+      case "30":
+        return algorithmsChallengeList;
       default:
         return [javascript, python, alogrithms];
     }
