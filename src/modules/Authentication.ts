@@ -1,19 +1,15 @@
 import * as vscode from "vscode";
+import Database from "./Database";
+import Hackerrank from "./Hackerrank";
+import Session from "./interface/Session";
 
 export default class Authentication {
   constructor() {}
 
   static async isLoggedIn() {
-    // TODO: Check Config files
-    return {
-      status: true,
-      userCredentials: {
-        hacker_id: 1234,
-        x_csrf_token: "csrf token",
-        hrank_session: "session token",
-        hacker_name: "Adeeba",
-      },
-    };
+    const session = await Database.getSession();
+
+    return session?.csrf_token && session?.hackerrank_cookie;
   }
 
   static async login() {
@@ -30,7 +26,12 @@ export default class Authentication {
         password: true,
       });
 
-      // TODO: Make a call to API
+      const session = await Hackerrank.login(
+        email as string,
+        password as string
+      );
+
+      await Database.saveSession(session as Session);
       console.log(email, password);
       return false;
     } catch (e) {}

@@ -1,55 +1,28 @@
-import fetch from "node-fetch";
+import Session from "./interface/Session";
+import Track from "./interface/Track";
+import TrackChallenges from "./interface/TrackChallenges";
 
-interface Session {
-  status: boolean;
-  csrf_token?: string;
-  hackerrank_session?: string;
-}
-
-interface Track {
-  id: number;
-  name: string;
-  description: string;
-  slug: string;
-}
-
-interface TrackChallenges {
-  maxScore: number;
-  submissions: number;
-  accepted: number;
-  successRatio: number;
-  id: number;
-  slug: string;
-  name: string;
-  description: string;
-  difficulty: string;
-  hints: string[];
-  tagNames: string[];
-  skill: string;
-}
-
-export class Hackerrank {
+export default class Hackerrank {
   static readonly BASE_URI = "https://www.hackerrank.com/rest";
-  static session: Session = {
-    status: false,
-  };
+  static session: Session = {};
 
   constructor() {}
 
-  static async getSession() {
+  static async getCookie() {
     const url = "https://www.hackerrank.com/auth/login";
 
-    const response = await fetch(url);
-    const cookie = response.headers.get("cookie") as string;
-    const sessionKey = cookie[2].split(";")[0];
-
-    return sessionKey;
+    // @ts-ignore
+    const response = await fetch(url, {
+      method: "GET",
+    });
+    const cookie = response.headers.get("set-cookie") as string;
+    return cookie;
   }
 
   static async login(email: string, password: string) {
     try {
-      const sessionKey = await this.getSession();
-      this.session.hackerrank_session = sessionKey;
+      const sessionKey = await this.getCookie();
+      this.session.hackerrank_cookie = sessionKey;
 
       const url = `${this.BASE_URI}/auth/login`;
       const headers = {
@@ -68,8 +41,9 @@ export class Hackerrank {
         body: data,
       };
 
+      // @ts-ignore
       const response = await fetch(url, requestOptions);
-      const responseData = (await response.json()) as Session;
+      const responseData = (await response.json()) as any;
 
       if (!responseData.status) {
         throw new Error("AUTHENTICATION_FAILED");
@@ -77,7 +51,7 @@ export class Hackerrank {
 
       this.session.csrf_token = responseData.csrf_token;
 
-      return responseData.status;
+      return this.session;
     } catch (e) {
       console.log(e);
     }
@@ -87,7 +61,10 @@ export class Hackerrank {
     try {
       const url = `${this.BASE_URI}/contests/master/tracks`;
 
-      const response = await fetch(url);
+      // @ts-ignore
+      const response = await fetch(url, {
+        method: "GET",
+      });
 
       const responseData = (await response.json()) as any;
 
@@ -110,6 +87,7 @@ export class Hackerrank {
       let isExhausted = false;
       const url = `${this.BASE_URI}/contests/master/tracks/${trackSlug}/challenges?offset=${offset}&limit=${limit}`;
 
+      // @ts-ignore
       const response = await fetch(url, {
         method: "GET",
       });

@@ -23,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // * Check login status and show appropriate TreeView
   const authStatus = await Authenticate.isLoggedIn();
 
-  if (authStatus.status) {
+  if (authStatus) {
     ChallengeProvider.getChallenges();
   }
 }
