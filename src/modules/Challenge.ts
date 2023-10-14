@@ -7,7 +7,7 @@ interface TChallenge {
   boilerplate: string;
 }
 
-export class Challenge {
+export default class Challenge {
   static getChallengeContent(challenge: TChallenge) {
     return `<!DOCTYPE html>
 <html>

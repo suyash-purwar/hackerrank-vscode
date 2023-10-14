@@ -78,6 +78,7 @@ export default class Hackerrank {
 
       return tracks;
     } catch (e) {
+      // Publish error message
       console.log(e);
     }
   }
@@ -96,6 +97,7 @@ export default class Hackerrank {
       const challengesCount = responseData.total;
       if (challengesCount <= offset + limit) isExhausted = true;
 
+      // TODO: Remove unnecessary fields
       const trackChallenges: TrackChallenges[] = responseData.models.map(
         (tc: any) => {
           return {
@@ -118,9 +120,10 @@ export default class Hackerrank {
       console.log(trackChallenges);
       return {
         isExhausted,
-        trackChallenges,
+        challenges: trackChallenges,
       };
     } catch (e) {
+      // Publish error message
       console.log(e);
     }
   }
