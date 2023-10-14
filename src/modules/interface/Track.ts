@@ -1,4 +1,4 @@
-export default interface Track {
+export default interface ITrack {
   id: number;
   name: string;
   description: string;

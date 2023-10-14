@@ -1,4 +1,4 @@
-export default interface TrackChallenges {
+export default interface ITrackChallenges {
   maxScore: number;
   submissions: number;
   accepted: number;

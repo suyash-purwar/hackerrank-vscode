@@ -1,10 +1,10 @@
-import Session from "./interface/Session";
-import Track from "./interface/Track";
-import TrackChallenges from "./interface/TrackChallenges";
+import ISession from "./interface/Session";
+import ITrack from "./interface/Track";
+import ITrackChallenges from "./interface/TrackChallenges";
 
 export default class Hackerrank {
   static readonly BASE_URI = "https://www.hackerrank.com/rest";
-  static session: Session = {};
+  static session: ISession = {};
 
   constructor() {}
 
@@ -68,7 +68,7 @@ export default class Hackerrank {
 
       const responseData = (await response.json()) as any;
 
-      const tracks: Track[] = responseData.models.map((t: any) => {
+      const tracks: ITrack[] = responseData.models.map((t: any) => {
         delete t["priority"];
         delete t["rewards_system_enabled"];
         delete t["hidden_at"];
@@ -98,7 +98,7 @@ export default class Hackerrank {
       if (challengesCount <= offset + limit) isExhausted = true;
 
       // TODO: Remove unnecessary fields
-      const trackChallenges: TrackChallenges[] = responseData.models.map(
+      const trackChallenges: ITrackChallenges[] = responseData.models.map(
         (tc: any) => {
           return {
             id: tc.id,

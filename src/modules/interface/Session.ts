@@ -1,4 +1,4 @@
-export default interface Session {
+export default interface ISession {
   csrf_token?: string;
   hackerrank_cookie?: string;
 }

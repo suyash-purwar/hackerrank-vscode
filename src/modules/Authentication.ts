@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import Database from "./Database";
 import Hackerrank from "./Hackerrank";
-import Session from "./interface/Session";
+import ISession from "./interface/Session";
 
 export default class Authentication {
   constructor() {}
@@ -31,7 +31,7 @@ export default class Authentication {
         password as string
       );
 
-      await Database.saveSession(session as Session);
+      await Database.saveSession(session as ISession);
       console.log(email, password);
       return false;
     } catch (e) {}

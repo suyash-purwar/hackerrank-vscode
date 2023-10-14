@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
-import Session from "./interface/Session";
+import ISession from "./interface/Session";
 
 export default class Database {
   static readonly folder = "hackerrank";
@@ -36,7 +36,7 @@ export default class Database {
     return this.path;
   }
 
-  static async saveSession(session: Session) {
+  static async saveSession(session: ISession) {
     try {
       const { csrf_token, hackerrank_cookie } = session;
       const content = `CSRF_TOKEN=${csrf_token}\nHACKERRANK_COOKIE=${hackerrank_cookie}`;
@@ -54,7 +54,7 @@ export default class Database {
       dotenv.config({
         path: configFilePath,
       });
-      const session: Session = {
+      const session: ISession = {
         csrf_token: process.env.CSRF_TOKEN,
         hackerrank_cookie: process.env.HACKERRANK_COOKIE,
       };
