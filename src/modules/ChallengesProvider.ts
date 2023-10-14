@@ -31,25 +31,12 @@ class TrackChallengeTreeItem extends vscode.TreeItem {
 export default class ChallengeProvider
   implements vscode.TreeDataProvider<vscode.TreeItem>
 {
-  static async getChallenges() {
+  static loadMainTree() {
     const challengesTreeView = vscode.window.createTreeView("challenges", {
       treeDataProvider: new ChallengeProvider(),
     });
 
-    challengesTreeView.onDidChangeSelection(async (event) => {
-      const selectedItem = event.selection[0] as TrackTreeItem;
-
-      if (selectedItem.type === "track") return;
-
-      if (selectedItem) {
-        // Render pains
-        vscode.window.showInformationMessage(`${selectedItem.label}`);
-        await Challenge.renderChallenge(
-          selectedItem.id as string,
-          selectedItem.label as string
-        );
-      }
-    });
+    challengesTreeView.onDidChangeSelection(this.getChallenge);
   }
 
   async getTracks(): Promise<TrackTreeItem[] | undefined> {
@@ -76,6 +63,16 @@ export default class ChallengeProvider
     });
 
     return trackChallengesTreeItems;
+  }
+
+  static async getChallenge(
+    event: vscode.TreeViewSelectionChangeEvent<vscode.TreeItem>
+  ) {
+    const selectedItem = event.selection[0] as TrackTreeItem;
+
+    if (selectedItem.type === "challenge") {
+      await Challenge.renderChallenge(selectedItem.slug);
+    }
   }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {

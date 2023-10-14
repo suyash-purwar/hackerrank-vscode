@@ -1,55 +1,59 @@
 import * as vscode from "vscode";
-import * as fs from "node:fs/promises";
-
-interface TChallenge {
-  id: string;
-  name: string;
-  boilerplate: string;
-}
+import IChallenge from "./interface/Challenge";
+import Hackerrank from "./Hackerrank";
 
 export default class Challenge {
-  static getChallengeContent(challenge: TChallenge) {
+  static getChallengeContent(challenge: IChallenge) {
     return `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${challenge.name}</title>
+    <style>
+      h1 {
+        font-size: 30px
+      }
+      p {
+        font-size: 16px;
+      }
+      code {
+        font-size: 15px;
+      }
+    </style>
   </head>
   <body>
     <h1>${challenge.name}</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    ${challenge.questionHtml}
   </body>
 </html>`;
   }
 
-  static async renderChallenge(challengeId: string, challengeName: string) {
+  static async renderChallenge(challengeSlug: string) {
+    const challenge = await Hackerrank.getChallenge(challengeSlug);
+    if (!challenge) return;
+
     const challengePane = vscode.window.createWebviewPanel(
-      challengeId,
-      challengeName,
+      challenge.id.toString(),
+      challenge.name,
       vscode.ViewColumn.Beside,
       {}
     );
 
-    const challenge: TChallenge = {
-      id: challengeId,
-      name: challengeName,
-      boilerplate: `#include<iostream>\nusing namespace std;\nint main() {\n\tcout << "Hello World" << endl;\n}`,
-    };
-
+    console.log(JSON.stringify(challenge.questionHtml));
     challengePane.webview.html = this.getChallengeContent(challenge);
 
-    const url = `${process.env.HOME}/.hackerrank/users/12100435/solutions/${challengeName}.cpp`;
+    // const url = `${process.env.HOME}/.hackerrank/users/12100435/solutions/${challengeName}.cpp`;
 
-    await fs.writeFile(url, challenge.boilerplate);
+    // await fs.writeFile(url, challenge.boilerplate);
 
-    const codeEditor = await vscode.workspace.openTextDocument(
-      vscode.Uri.file(url)
-    );
+    // const codeEditor = await vscode.workspace.openTextDocument(
+    //   vscode.Uri.file(url)
+    // );
 
-    vscode.window.showTextDocument(codeEditor, {
-      viewColumn: vscode.ViewColumn.Beside,
-    });
+    // vscode.window.showTextDocument(codeEditor, {
+    //   viewColumn: vscode.ViewColumn.Beside,
+    // });
 
     return challengePane;
   }

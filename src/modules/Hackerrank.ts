@@ -101,18 +101,10 @@ export default class Hackerrank {
       const trackChallenges: TrackChallenges[] = responseData.models.map(
         (tc: any) => {
           return {
-            maxScore: tc.max_score,
-            submissions: tc.total_count,
-            accepted: tc.solved_count,
-            successRatio: tc.success_ratio,
             id: tc.id,
             slug: tc.slug,
             name: tc.name,
             description: tc.preview,
-            difficulty: tc.difficulty_name,
-            hints: tc.hints,
-            tagNames: tc.tag_names,
-            skill: tc.skill,
           };
         }
       );
@@ -130,7 +122,35 @@ export default class Hackerrank {
 
   static async getChallenge(challengeSlug: string) {
     try {
+      const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}`;
+
+      // @ts-ignore
+      const response = await fetch(url, {
+        method: "GET",
+      });
+      const responseData = await response.json();
+
+      const challenge = {
+        id: responseData.model.id,
+        slug: responseData.model.slug,
+        name: responseData.model.name,
+        languages: responseData.model.languages,
+        totalCount: responseData.model.total_count,
+        solvedCount: responseData.model.solved_count,
+        successRatio: responseData.model.success_ratio,
+        maxScore: responseData.model.max_score,
+        userScore: responseData.model.user_score,
+        difficulty: responseData.model.difficulty_name,
+        description: responseData.model.preview,
+        questionHtml: responseData.model.body_html,
+        authorName: responseData.model.author_name,
+        authorAvatar: responseData.model.author_avatar,
+      };
+
+      console.log(challenge);
+      return challenge;
     } catch (e) {
+      // Publish error
       console.log(e);
     }
   }
