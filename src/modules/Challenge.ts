@@ -13,7 +13,7 @@ export default class Challenge {
     <title>${challenge.name}</title>
     <style>
       body {
-        border-left: 3px solid green;
+        border-left: 3px solid #00EA64;
       }
       h1 {
         font-size: 30px
@@ -35,11 +35,29 @@ export default class Challenge {
       p, li {
         line-height: 1.7;
       }
+      .solve {
+        font-size: 15px;
+        border-radius: 5px;
+        padding: 10px 25px;
+        cursor: pointer;
+        border: none;
+        font-weight: 500;
+        background-color: #00EA64;
+      }
     </style>
   </head>
   <body>
     <h1>${challenge.name}</h1>
+    <button class="solve" onclick="solve()">Solve</button>
     ${challenge.questionHtml}
+    <script>
+      const vscode = acquireVsCodeApi();
+      function solve() {
+        vscode.postMessage({
+          event: "solve"
+        });
+      }
+    </script>
   </body>
 </html>`;
   }
@@ -52,11 +70,42 @@ export default class Challenge {
       challenge.id.toString(),
       challenge.name,
       vscode.ViewColumn.Beside,
-      {}
+      {
+        enableScripts: true,
+      }
     );
 
     // await fs.writeFile("page.html", challenge.questionHtml);
     challengePane.webview.html = this.getChallengeContent(challenge);
+
+    challengePane.webview.onDidReceiveMessage(async (message) => {
+      let formattedLanguage = [];
+      for (let lang of challenge.languages) {
+        let l = "";
+        for (let index = 0; index < lang.length; index++) {
+          if (index == 0) {
+            l += lang[index].toUpperCase();
+            continue;
+          }
+          if (isNaN(+lang[index])) {
+            l += lang[index];
+            if (index + 1 == lang.length) formattedLanguage.push(l);
+          } else {
+            l += " " + lang.slice(index);
+            formattedLanguage.push(l);
+            break;
+          }
+        }
+      }
+
+      const languageChosen = await vscode.window.showQuickPick(
+        formattedLanguage
+      );
+
+      if (languageChosen) {
+        vscode.window.showInformationMessage(languageChosen);
+      }
+    });
 
     // const url = `${process.env.HOME}/.hackerrank/users/12100435/solutions/${challengeName}.cpp`;
 
