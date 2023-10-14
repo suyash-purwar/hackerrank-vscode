@@ -13,4 +13,5 @@ export default interface IChallenge {
   questionHtml: string;
   authorName: string;
   authorAvatar: string;
+  languagesBoilerplate: Record<string, string>;
 }

@@ -1,3 +1,4 @@
+import IChallenge from "./interface/Challenge";
 import ISession from "./interface/Session";
 import ITrack from "./interface/Track";
 import ITrackChallenges from "./interface/TrackChallenges";
@@ -130,7 +131,7 @@ export default class Hackerrank {
       });
       const responseData = await response.json();
 
-      const challenge = {
+      const challenge: IChallenge = {
         id: responseData.model.id,
         slug: responseData.model.slug,
         name: responseData.model.name,
@@ -145,7 +146,24 @@ export default class Hackerrank {
         questionHtml: responseData.model.body_html,
         authorName: responseData.model.author_name,
         authorAvatar: responseData.model.author_avatar,
+        languagesBoilerplate: {},
       };
+
+      for (let lang of responseData.model.languages) {
+        let key = `${lang}_template`;
+        if (!responseData.model[key]) continue;
+        challenge.languagesBoilerplate[key] = responseData.model[key];
+
+        let keyHead = `${key}_head`;
+        if (responseData.model[keyHead]) {
+          challenge.languagesBoilerplate[keyHead] = responseData.model[keyHead];
+        }
+
+        let keyTail = `${key}_tail`;
+        if (responseData.model[keyTail]) {
+          challenge.languagesBoilerplate[keyTail] = responseData.model[keyTail];
+        }
+      }
 
       console.log(challenge);
       return challenge;
