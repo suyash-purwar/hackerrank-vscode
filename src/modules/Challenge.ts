@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
-import * as fs from "fs/promises";
 import IChallenge from "./interface/Challenge";
 import Hackerrank from "./Hackerrank";
+import Language from "./Language";
+import Database from "./Database";
 
 export default class Challenge {
   static getChallengeContent(challenge: IChallenge) {
@@ -54,7 +55,8 @@ export default class Challenge {
       const vscode = acquireVsCodeApi();
       function solve() {
         vscode.postMessage({
-          event: "solve"
+          event: 'solve',
+          challengeSlug: "${challenge.slug}"
         });
       }
     </script>
@@ -62,62 +64,62 @@ export default class Challenge {
 </html>`;
   }
 
-  static async renderChallenge(challengeSlug: string) {
+  static async renderChallenge(challengeSlug: string, trackSlug: string) {
     const challenge = await Hackerrank.getChallenge(challengeSlug);
     if (!challenge) return;
 
     const challengePane = vscode.window.createWebviewPanel(
       challenge.id.toString(),
       challenge.name,
-      vscode.ViewColumn.Beside,
+      vscode.ViewColumn.Active,
       {
         enableScripts: true,
       }
     );
 
-    // await fs.writeFile("page.html", challenge.questionHtml);
     challengePane.webview.html = this.getChallengeContent(challenge);
 
     challengePane.webview.onDidReceiveMessage(async (message) => {
-      let formattedLanguage = [];
-      for (let lang of challenge.languages) {
-        let l = "";
-        for (let index = 0; index < lang.length; index++) {
-          if (index == 0) {
-            l += lang[index].toUpperCase();
-            continue;
-          }
-          if (isNaN(+lang[index])) {
-            l += lang[index];
-            if (index + 1 == lang.length) formattedLanguage.push(l);
-          } else {
-            l += " " + lang.slice(index);
-            formattedLanguage.push(l);
-            break;
-          }
-        }
-      }
-
       const languageChosen = await vscode.window.showQuickPick(
-        formattedLanguage
+        challenge.languages.map((lang) => new Language(lang))
       );
 
-      if (languageChosen) {
-        vscode.window.showInformationMessage(languageChosen);
+      if (!languageChosen) return;
+
+      let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
+      let boilerplate =
+        challenge.languagesBoilerplate[`${languageChosen.value}_template`];
+      if (
+        challenge.languagesBoilerplate[`${languageChosen.value}_template_head`]
+      ) {
+        boilerplate +=
+          challenge.languagesBoilerplate[
+            `${languageChosen.value}_template_head`
+          ];
       }
+      if (
+        challenge.languagesBoilerplate[`${languageChosen.value}_template_tail`]
+      ) {
+        boilerplate +=
+          challenge.languagesBoilerplate[
+            `${languageChosen.value}_template_tail`
+          ];
+      }
+
+      const url = await Database.createSolutionFile(
+        fileName,
+        trackSlug,
+        boilerplate
+      );
+
+      const codeEditor = await vscode.workspace.openTextDocument(
+        vscode.Uri.file(url)
+      );
+
+      vscode.window.showTextDocument(codeEditor, {
+        viewColumn: vscode.ViewColumn.Beside,
+      });
     });
-
-    // const url = `${process.env.HOME}/.hackerrank/users/12100435/solutions/${challengeName}.cpp`;
-
-    // await fs.writeFile(url, challenge.boilerplate);
-
-    // const codeEditor = await vscode.workspace.openTextDocument(
-    //   vscode.Uri.file(url)
-    // );
-
-    // vscode.window.showTextDocument(codeEditor, {
-    //   viewColumn: vscode.ViewColumn.Beside,
-    // });
 
     return challengePane;
   }

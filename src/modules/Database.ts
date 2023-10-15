@@ -38,10 +38,23 @@ export default class Database {
 
   static async saveSession(session: ISession) {
     try {
-      const { csrf_token, hackerrank_cookie } = session;
-      const content = `CSRF_TOKEN=${csrf_token}\nHACKERRANK_COOKIE=${hackerrank_cookie}`;
+      const { email, csrf_token, hackerrank_cookie } = session;
+      process.env.EMAIL = email;
+      process.env.CSRF_TOKEN = csrf_token;
+      process.env.HACKERRANK_COOKIE = hackerrank_cookie;
+      const content = `EMAIL=${email}\nCSRF_TOKEN=${csrf_token}\nHACKERRANK_COOKIE=${hackerrank_cookie}`;
+
       const path = await this.getPath();
       await fs.writeFile(`${path}/${this.configFile}`, content);
+
+      // * Setup users structure if not present
+      try {
+        await fs.access(`${path}/users/${email}/solutions`, fs.constants.F_OK);
+      } catch (e) {
+        fs.mkdir(`${path}/users/${email}/solutions`, {
+          recursive: true,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -54,13 +67,24 @@ export default class Database {
       dotenv.config({
         path: configFilePath,
       });
-      const session: ISession = {
-        csrf_token: process.env.CSRF_TOKEN,
-        hackerrank_cookie: process.env.HACKERRANK_COOKIE,
-      };
-      return session;
     } catch (e) {
       console.log(e);
     }
+  }
+
+  static async createSolutionFile(
+    fileName: string,
+    trackSlug: string,
+    boilerplate: string
+  ) {
+    const url = `${this.path}/users/${process.env.EMAIL}/solutions/${trackSlug}`;
+    try {
+      await fs.access(url, fs.constants.F_OK);
+    } catch (e) {
+      await fs.mkdir(url);
+    }
+    console.log(boilerplate);
+    await fs.writeFile(`${url}/${fileName}`, boilerplate);
+    return `${url}/${fileName}`;
   }
 }

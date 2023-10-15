@@ -24,6 +24,7 @@ export default class Hackerrank {
     try {
       const sessionKey = await this.getCookie();
       this.session.hackerrank_cookie = sessionKey;
+      this.session.email = email;
 
       const url = `${this.BASE_URI}/auth/login`;
       const headers = {
@@ -106,6 +107,7 @@ export default class Hackerrank {
             slug: tc.slug,
             name: tc.name,
             description: tc.preview,
+            trackSlug,
           };
         }
       );

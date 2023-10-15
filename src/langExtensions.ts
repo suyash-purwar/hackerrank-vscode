@@ -28,4 +28,13 @@ export default {
   ocaml: ".ml",
   racket: ".rkt",
   sbcl: ".lisp",
+  r: ".R",
+  groovy: ".groovy",
+  lolcode: ".lol",
+  visualbasic: ".vb",
+  pascal: ".pas",
+  tcl: ".tcl",
+  smalltalk: ".st",
+  bash: ".sh",
+  text: ".txt",
 };

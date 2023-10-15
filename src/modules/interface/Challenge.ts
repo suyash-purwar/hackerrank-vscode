@@ -2,6 +2,7 @@ export default interface IChallenge {
   id: number;
   slug: string;
   name: string;
+  trackSlug?: string;
   languages: string[];
   totalCount: number;
   solvedCount: number;

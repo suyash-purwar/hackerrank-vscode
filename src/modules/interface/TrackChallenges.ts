@@ -6,6 +6,7 @@ export default interface ITrackChallenges {
   id: number;
   slug: string;
   name: string;
+  trackSlug?: string;
   description: string;
   difficulty: string;
   hints: string[];

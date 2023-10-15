@@ -16,15 +16,18 @@ class TrackTreeItem extends vscode.TreeItem {
 class TrackChallengeTreeItem extends vscode.TreeItem {
   readonly type: string = "challenge";
   slug: string;
+  trackSlug: string;
 
   constructor(
     challengeId: number,
     challengeSlug: string,
-    challengeName: string
+    challengeName: string,
+    trackSlug: string
   ) {
     super(challengeName);
     this.id = challengeId.toString();
     this.slug = challengeSlug;
+    this.trackSlug = trackSlug;
   }
 }
 
@@ -59,7 +62,7 @@ export default class ChallengeProvider
     if (!trackChallenges) return;
 
     const trackChallengesTreeItems = trackChallenges.challenges.map((tc) => {
-      return new TrackChallengeTreeItem(tc.id, tc.slug, tc.name);
+      return new TrackChallengeTreeItem(tc.id, tc.slug, tc.name, trackSlug);
     });
 
     return trackChallengesTreeItems;
@@ -68,10 +71,13 @@ export default class ChallengeProvider
   static async getChallenge(
     event: vscode.TreeViewSelectionChangeEvent<vscode.TreeItem>
   ) {
-    const selectedItem = event.selection[0] as TrackTreeItem;
+    const selectedItem = event.selection[0] as TrackChallengeTreeItem;
 
     if (selectedItem.type === "challenge") {
-      await Challenge.renderChallenge(selectedItem.slug);
+      await Challenge.renderChallenge(
+        selectedItem.slug,
+        selectedItem.trackSlug
+      );
     }
   }
 
