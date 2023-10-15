@@ -6,6 +6,7 @@ import Database from "./Database";
 
 export default class Challenge {
   static getChallengeContent(challenge: IChallenge) {
+    // TODO: Migrate to Pug
     return `<!DOCTYPE html>
 <html>
   <head>
@@ -88,12 +89,7 @@ export default class Challenge {
 
       let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
       let boilerplate = "";
-      if (challenge.languagesBoilerplate[`${languageChosen.value}_template`]) {
-        boilerplate +=
-          challenge.languagesBoilerplate[`${languageChosen.value}_template`];
-      } else {
-        boilerplate += languageChosen.default_boilerplate;
-      }
+
       if (
         challenge.languagesBoilerplate[`${languageChosen.value}_template_head`]
       ) {
@@ -102,6 +98,14 @@ export default class Challenge {
             `${languageChosen.value}_template_head`
           ];
       }
+
+      if (challenge.languagesBoilerplate[`${languageChosen.value}_template`]) {
+        boilerplate +=
+          challenge.languagesBoilerplate[`${languageChosen.value}_template`];
+      } else {
+        boilerplate += languageChosen.default_boilerplate;
+      }
+
       if (
         challenge.languagesBoilerplate[`${languageChosen.value}_template_tail`]
       ) {
