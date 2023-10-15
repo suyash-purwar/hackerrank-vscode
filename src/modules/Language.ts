@@ -1,9 +1,10 @@
-import langExtensions from "../langExtensions";
+import langExtensions from "../languages";
 
 export default class Language {
   label: string;
   value: string;
   extension: string;
+  default_boilerplate: string;
 
   constructor(value: string) {
     this.value = value;
@@ -31,6 +32,9 @@ export default class Language {
       value = value.slice(0, value.length - 1);
     }
 
-    this.extension = langExtensions[value as keyof typeof langExtensions];
+    this.extension =
+      langExtensions[value as keyof typeof langExtensions].extension;
+    this.default_boilerplate =
+      langExtensions[value as keyof typeof langExtensions].default_boilerplate;
   }
 }

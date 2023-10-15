@@ -87,8 +87,13 @@ export default class Challenge {
       if (!languageChosen) return;
 
       let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
-      let boilerplate =
-        challenge.languagesBoilerplate[`${languageChosen.value}_template`];
+      let boilerplate = "";
+      if (challenge.languagesBoilerplate[`${languageChosen.value}_template`]) {
+        boilerplate +=
+          challenge.languagesBoilerplate[`${languageChosen.value}_template`];
+      } else {
+        boilerplate += languageChosen.default_boilerplate;
+      }
       if (
         challenge.languagesBoilerplate[`${languageChosen.value}_template_head`]
       ) {
