@@ -1,189 +1,319 @@
-export default {
-  java: {
+export default [
+  {
+    label: "Java 7",
+    value: "java",
     extension: ".java",
     default_boilerplate:
       "import java.io.*;\nimport java.util.*;\n\npublic class Solution {\n\n    public static void main(String[] args) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */\n    }\n}",
   },
-  d: {
+  {
+    label: "Java 8",
+    value: "java8",
+    extension: ".java",
+    default_boilerplate:
+      "import java.io.*;\nimport java.util.*;\n\npublic class Solution {\n\n    public static void main(String[] args) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */\n    }\n}",
+  },
+  {
+    label: "Java 15",
+    value: "java15",
+    extension: ".java",
+    default_boilerplate:
+      "import java.io.*;\nimport java.util.*;\n\npublic class Solution {\n\n    public static void main(String[] args) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */\n    }\n}",
+  },
+  {
+    label: "D",
+    value: "d",
     extension: ".d",
     default_boilerplate:
       "/* Enter your code here. Read input from STDIN. Print output to STDOUT */",
   },
-  c: {
+  {
+    label: "C",
+    value: "c",
     extension: ".c",
     default_boilerplate:
       "#include <stdio.h>\n#include <string.h>\n#include <math.h>\n#include <stdlib.h>\n\nint main() {\n\n    /* Enter your code here. Read input from STDIN. Print output to STDOUT */\n    return 0;\n}",
   },
-  python: {
+  {
+    label: "Python 3",
+    value: "python3",
     extension: ".py",
     default_boilerplate: "",
   },
-  cpp: {
+  {
+    label: "C++ 11",
+    value: "cpp",
     extension: ".cpp",
     default_boilerplate:
       "#include <cmath>\n#include <cstdio>\n#include <vector>\n#include <iostream>\n#include <algorithm>\nusing namespace std;\n\n\nint main() {\n    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   \n    return 0;\n}",
   },
-  html: {
+  {
+    label: "C++ 14",
+    value: "cpp14",
+    extension: ".cpp",
+    default_boilerplate:
+      "#include <cmath>\n#include <cstdio>\n#include <vector>\n#include <iostream>\n#include <algorithm>\nusing namespace std;\n\n\nint main() {\n    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   \n    return 0;\n}",
+  },
+  {
+    label: "C++ 20",
+    value: "cpp20",
+    extension: ".cpp",
+    default_boilerplate:
+      "#include <cmath>\n#include <cstdio>\n#include <vector>\n#include <iostream>\n#include <algorithm>\nusing namespace std;\n\n\nint main() {\n    /* Enter your code here. Read input from STDIN. Print output to STDOUT */   \n    return 0;\n}",
+  },
+  {
+    label: "HTML",
+    value: "html",
     extension: ".html",
     default_boilerplate: "",
   },
-  javascript: {
+  {
+    label: "JavaScript (Node.js)",
+    value: "javascript",
     extension: ".js",
     default_boilerplate:
       "function processData(input) {\n    //Enter your code here\n} \n\nprocess.stdin.resume();\nprocess.stdin.setEncoding('ascii');\n_input = '';\nprocess.stdin.on('data', function (input) {\n    _input += input;\n});\n\nprocess.stdin.on('end', function () {\n   processData(_input);\n});",
   },
-  typescript: {
+  {
+    label: "TypeScript",
+    value: "typescript",
     extension: ".ts",
     default_boilerplate:
       'function processData(input) {\n    //Enter your code here\n} \n\nprocess.stdin.resume();\nprocess.stdin.setEncoding("ascii");\n_input = "";\nprocess.stdin.on("data", function (input) {\n    _input += input;\n});\n\nprocess.stdin.on("end", function () {\n   processData(_input);\n});',
   },
-  css: {
+  {
+    label: "CSS",
+    value: "css",
     extension: ".css",
     default_boilerplate: "",
   },
-  haskell: {
+  {
+    label: "Haskell",
+    value: "haskell",
     extension: ".hs",
     default_boilerplate:
       "-- Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  erlang: {
+  {
+    label: "Erlang",
+    value: "erlang",
     extension: ".erl",
     default_boilerplate:
       "% Enter your code here. Read input from STDIN. Print output to STDOUT\n% Your class should be named solution\n\n-module(solution).\n-export([main/0]).\n\nmain() ->\n\t.\n",
   },
-  scala: {
+  {
+    label: "Scala",
+    value: "scala",
     extension: ".scala",
     default_boilerplate:
       "object Solution {\n\n    def main(args: Array[String]) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution\n*/\n    }\n}",
   },
-  clojure: {
+  {
+    label: "Clojure",
+    value: "clojure",
     extension: ".clj",
     default_boilerplate:
       "; Enter your code here. Read input from STDIN. Print output to STDOUT\n;",
   },
-  pypy: {
+  {
+    label: "Pypy 3",
+    value: "pypy3",
     extension: ".py",
     default_boilerplate:
       "# Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  ruby: {
+  {
+    label: "Ruby",
+    value: "ruby",
     extension: ".ruby",
     default_boilerplate:
       "# Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  rust: {
+  {
+    label: "Rust",
+    value: "rust",
     extension: ".rs",
     default_boilerplate: "// Enter your code here",
   },
-  php: {
+  {
+    label: "PHP",
+    value: "php",
     extension: ".php",
     default_boilerplate:
       "<?php\n$_fp = fopen('php://stdin', 'r');\n/* Enter your code here. Read input from STDIN. Print output to STDOUT */\n\n?>",
   },
-  swift: {
+  {
+    label: "Swift",
+    value: "swift",
     extension: ".swift",
     default_boilerplate: "import Foundation\n\n// Enter your code here ",
   },
-  objectivec: {
+  {
+    label: "Objective-C",
+    value: "objectivec",
     extension: ".m",
     default_boilerplate:
       "//Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  kotlin: {
+  {
+    label: "Kotlin",
+    value: "kotlin",
     extension: ".kt",
     default_boilerplate:
       "import java.io.*\nimport java.util.*\n\nfun main(args: Array<String>) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. */\n}",
   },
-  lua: {
+  {
+    label: "Lua",
+    value: "lua",
     extension: ".lua",
     default_boilerplate:
       "-- Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  csharp: {
+  {
+    label: "C#",
+    value: "csharp",
     extension: ".cs",
     default_boilerplate:
       "using System;\nusing System.Collections.Generic;\nusing System.IO;\nclass Solution {\n    static void Main(String[] args) {\n        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution */\n    }\n}",
   },
-  perl: {
+  {
+    label: "Perl",
+    value: "perl",
     extension: ".pl",
     default_boilerplate:
       "# Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  julia: {
+  {
+    label: "Julia",
+    value: "julia",
     extension: ".jl",
     default_boilerplate: "# Enter your code here",
   },
-  go: {
+  {
+    label: "Go",
+    value: "go",
     extension: ".go",
     default_boilerplate:
       "package main\nimport 'fmt'\n\nfunc main() {\n //Enter your code here. Read input from STDIN. Print output to STDOUT\n}",
   },
-  fsharp: {
+  {
+    label: "F#",
+    value: "fsharp",
     extension: ".fs",
     default_boilerplate:
       "//Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  elixir: {
+  {
+    label: "Elixir",
+    value: "elixir",
     extension: ".ex",
     default_boilerplate:
       "defmodule Solution do\n#Enter your code here. Read input from STDIN. Print output to STDOUT\nend",
   },
-  ocaml: {
+  {
+    label: "OCaml",
+    value: "ocaml",
     extension: ".ml",
     default_boilerplate:
       "(* Enter your code here. Read input from STDIN. Print output to STDOUT *)",
   },
-  racket: {
+  {
+    label: "Racket",
+    value: "racket",
     extension: ".rkt",
     default_boilerplate:
       "#lang racket\n; Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  sbcl: {
+  {
+    label: "Common Lisp (SBCL)",
+    value: "sbcl",
     extension: ".lisp",
     default_boilerplate:
       ";; Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  r: {
+  {
+    label: "R",
+    value: "r",
     extension: ".R",
     default_boilerplate:
       "# Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  groovy: {
+  {
+    label: "Groovy",
+    value: "groovy",
     extension: ".groovy",
     default_boilerplate:
       "//Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  lolcode: {
+  {
+    label: "LOLCODE",
+    value: "lolcode",
     extension: ".lol",
     default_boilerplate:
       "BTW Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  visualbasic: {
+  {
+    label: "VB.NET",
+    value: "visualbasic",
     extension: ".vb",
     default_boilerplate:
       "'Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  pascal: {
+  {
+    label: "Pascal",
+    value: "pascal",
     extension: ".pas",
     default_boilerplate:
       "(* Enter your code here. Read input from STDIN. Print output to STDOUT *)",
   },
-  tcl: {
+  {
+    label: "Tcl",
+    value: "tcl",
     extension: ".tcl",
     default_boilerplate:
       "# Enter your code here. Read input from STDIN. Print output to STDOUT",
   },
-  smalltalk: {
+  {
+    label: "Smalltalk",
+    value: "smalltalk",
     extension: ".st",
     default_boilerplate:
       '"Enter your code here. Read input from STDIN. Print output to STDOUT"',
   },
-  bash: {
+  {
+    label: "Bash",
+    value: "bash",
     extension: ".sh",
     default_boilerplate: "",
   },
-  text: {
+  {
+    label: "Text",
+    value: "text",
     extension: ".txt",
     default_boilerplate: "",
   },
-};
+  {
+    label: "DB2",
+    value: "db2",
+    extension: ".sql",
+    default_boilerplate: "",
+  },
+  {
+    label: "MySQL",
+    value: "mysql",
+    extension: ".sql",
+    default_boilerplate: "",
+  },
+  {
+    label: "Oracle",
+    value: "oracle",
+    extension: ".sql",
+    default_boilerplate: "",
+  },
+  {
+    label: "MS SQL Server",
+    value: "tsql",
+    extension: ".sql",
+    default_boilerplate: "",
+  },
+];
