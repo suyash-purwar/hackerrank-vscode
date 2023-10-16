@@ -37,27 +37,57 @@ export default class Challenge {
       p, li {
         line-height: 1.7;
       }
-      .solve {
+      .btn {
         font-size: 15px;
-        border-radius: 5px;
         padding: 10px 25px;
-        cursor: pointer;
         border: none;
+        cursor: pointer;
         font-weight: 500;
+        border-radius: 3px;
+      }
+      .buttons::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      .solve {
         background-color: #00EA64;
+      }
+      .run {
+        float: right;
+        background-color: #F4F4F5;
+        margin-right: 10px;
+      }
+      .submit {
+        float: right;
+        background-color: #00EA64;
+      }
+      .disable {
+        cursor: not-allowed;
       }
     </style>
   </head>
   <body>
     <h1>${challenge.name}</h1>
-    <button class="solve" onclick="solve()">Solve</button>
+    <div class="buttons">
+      <button class="btn solve" onclick="solve()">Solve</button>
+      <button class="btn submit disable" onclick="execute('submit')" disabled>Submit</button>
+      <button class="btn run disable" onclick="execute('run')" disabled>Run</button>
+    </div>
     ${challenge.questionHtml}
     <script>
       const vscode = acquireVsCodeApi();
       function solve() {
         vscode.postMessage({
           event: 'solve',
-          challengeSlug: "${challenge.slug}"
+          challenge: ${JSON.stringify(challenge)}
+        });
+      }
+
+      function execute(type) {
+        vscode.postMessage({
+          event: type,
+          challenge: ${JSON.stringify(challenge)}
         });
       }
     </script>
@@ -65,7 +95,7 @@ export default class Challenge {
 </html>`;
   }
 
-  static async renderChallenge(challengeSlug: string, trackSlug: string) {
+  static async renderChallenge(challengeSlug: string) {
     const challenge = await Hackerrank.getChallenge(challengeSlug);
     if (!challenge) return;
 
@@ -80,16 +110,50 @@ export default class Challenge {
 
     challengePane.webview.html = this.getChallengeContent(challenge);
 
-    challengePane.webview.onDidReceiveMessage(async (message) => {
-      const languageChosen = await vscode.window.showQuickPick(
-        challenge.languages.map((lang) => new Language(lang))
-      );
+    challengePane.webview.onDidReceiveMessage(
+      async (message) =>
+        await this.handleMessageFromWebView(message, challengePane.webview)
+    );
 
-      if (!languageChosen) return;
+    return challengePane;
+  }
 
-      let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
+  static async handleMessageFromWebView(message: any, webview: vscode.Webview) {
+    let { event, challenge }: { event: string; challenge: IChallenge } =
+      message;
+
+    switch (event) {
+      case "solve":
+        /**
+         * ! 'this' doesn't reference to the current class.
+         * ! When the event is triggered, a new context is created and 'this' references to that.
+         * ! Do not change to 'this.openEditor(challenge)'
+         */
+        await Challenge.openEditor(challenge);
+        break;
+      case "run":
+        break;
+      case "submit":
+        break;
+    }
+  }
+
+  static async openEditor(challenge: IChallenge) {
+    const languageChosen = await vscode.window.showQuickPick(
+      challenge.languages.map((lang) => new Language(lang))
+    );
+
+    if (!languageChosen) return;
+
+    let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
+
+    let url = await Database.fetchSolutionFile(
+      fileName,
+      challenge.trackSlug as string
+    );
+
+    if (!url) {
       let boilerplate = "";
-
       if (
         challenge.languagesBoilerplate[`${languageChosen.value}_template_head`]
       ) {
@@ -115,21 +179,19 @@ export default class Challenge {
           ];
       }
 
-      const url = await Database.createSolutionFile(
+      url = await Database.createSolutionFile(
         fileName,
-        trackSlug,
+        challenge.trackSlug as string,
         boilerplate
       );
+    }
 
-      const codeEditor = await vscode.workspace.openTextDocument(
-        vscode.Uri.file(url)
-      );
+    const codeEditor = await vscode.workspace.openTextDocument(
+      vscode.Uri.file(url)
+    );
 
-      vscode.window.showTextDocument(codeEditor, {
-        viewColumn: vscode.ViewColumn.Beside,
-      });
+    vscode.window.showTextDocument(codeEditor, {
+      viewColumn: vscode.ViewColumn.Beside,
     });
-
-    return challengePane;
   }
 }

@@ -74,10 +74,7 @@ export default class ChallengeProvider
     const selectedItem = event.selection[0] as TrackChallengeTreeItem;
 
     if (selectedItem.type === "challenge") {
-      await Challenge.renderChallenge(
-        selectedItem.slug,
-        selectedItem.trackSlug
-      );
+      await Challenge.renderChallenge(selectedItem.slug);
     }
   }
 
