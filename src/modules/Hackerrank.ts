@@ -2,6 +2,7 @@ import IChallenge from "./interface/Challenge";
 import ISession from "./interface/Session";
 import ITrack from "./interface/Track";
 import ITrackChallenges from "./interface/TrackChallenges";
+import ISolution from "./interface/Solution";
 
 export default class Hackerrank {
   static readonly BASE_URI = "https://www.hackerrank.com/rest";
@@ -169,6 +170,14 @@ export default class Hackerrank {
 
       console.log(challenge);
       return challenge;
+    } catch (e) {
+      // Publish error
+      console.log(e);
+    }
+  }
+
+  static runCode(challengeSlug: string, solution: ISolution) {
+    try {
     } catch (e) {
       // Publish error
       console.log(e);

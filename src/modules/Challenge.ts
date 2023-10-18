@@ -4,10 +4,14 @@ import IChallenge from "./interface/Challenge";
 import Hackerrank from "./Hackerrank";
 import Language from "./Language";
 import Database from "./Database";
+import ISolution from "./interface/Solution";
 
 interface IChallengeEditor {
   webviewPanel: vscode.WebviewPanel;
-  editors: vscode.TextDocument[];
+  editors: {
+    textEditor: vscode.TextDocument;
+    language: string;
+  }[];
   data: IChallenge;
 }
 
@@ -137,43 +141,61 @@ export default class Challenge {
       viewColumn: vscode.ViewColumn.Beside,
     });
 
-    challengeEditors.push(codeEditor);
+    challengeEditors.push({
+      textEditor: codeEditor,
+      language: languageChosen.value,
+    });
   }
 
-  static async runCode(challenge: IChallengeEditor) {
+  static async getCodeFromEditor(challenge: IChallengeEditor) {
     const visibleEditors = vscode.window.visibleTextEditors;
-    console.log(visibleEditors.length);
+    let solution: ISolution | undefined;
 
     if (!visibleEditors.length) {
       vscode.window.showErrorMessage(
         "Open the code file which you want execute."
       );
+      return solution;
     }
 
     if (visibleEditors.length === 1) {
-      if (challenge.editors.indexOf(visibleEditors[0].document) >= 0) {
-        const solution = visibleEditors[0].document.getText();
-        console.log(solution);
-      } else {
+      for (let editor of challenge.editors) {
+        if (editor.textEditor === visibleEditors[0].document) {
+          solution = {
+            code: visibleEditors[0].document.getText(),
+            language: editor.language,
+          };
+        }
+      }
+      if (!solution) {
         vscode.window.showErrorMessage(
-          "Solution file not found. Make sure it is visible while clicking on the 'Run' button"
+          "Keep the solution file you want to submit visible."
         );
       }
+      return solution;
     }
 
     if (visibleEditors.length > 1) {
-      const validEditors: vscode.TextEditor[] = [];
-      for (let editor of visibleEditors) {
-        if (challenge.editors.indexOf(editor.document) !== -1) {
-          validEditors.push(editor);
+      const validEditors: {
+        textEditor: vscode.TextEditor;
+        language: string;
+      }[] = [];
+      for (let visibleEditor of visibleEditors) {
+        for (let myEditor of challenge.editors) {
+          if (myEditor.textEditor === visibleEditor.document) {
+            validEditors.push({
+              textEditor: visibleEditor,
+              language: myEditor.language,
+            });
+          }
         }
       }
 
       const chosenEditor = await vscode.window.showQuickPick(
         validEditors.map((editor) => {
           let indexOfLastForwardSlash =
-            editor.document.fileName.lastIndexOf("/");
-          let label = editor.document.fileName.slice(
+            editor.textEditor.document.fileName.lastIndexOf("/");
+          let label = editor.textEditor.document.fileName.slice(
             indexOfLastForwardSlash + 1
           );
           return {
@@ -183,8 +205,25 @@ export default class Challenge {
         })
       );
 
-      console.log(chosenEditor?.value.document.getText());
+      if (!chosenEditor) return;
+
+      solution = {
+        code: chosenEditor.value.textEditor.document.getText(),
+        language: chosenEditor.value.language,
+      };
+
+      return solution;
     }
+  }
+
+  static async runCode(challenge: IChallengeEditor) {
+    const solution = await this.getCodeFromEditor(challenge);
+
+    if (!solution) return;
+
+    const result = await Hackerrank.runCode(challenge.data.slug, solution);
+
+    console.log(solution);
   }
 
   // static async updateWebviewState(closedDocument?: vscode.TextDocument) {
