@@ -83,18 +83,17 @@ export default class Database {
     } catch (e) {
       await fs.mkdir(url);
     }
-    console.log(boilerplate);
     await fs.writeFile(`${url}/${fileName}`, boilerplate);
     return `${url}/${fileName}`;
   }
 
-  static async fetchSolutionFile(fileName: string, trackSlug: string) {
+  static async fetchSolutionFileUrl(fileName: string, trackSlug: string) {
     const url = `${this.path}/users/${process.env.EMAIL}/solutions/${trackSlug}/${fileName}`;
     try {
       await fs.access(url, fs.constants.F_OK);
       return url;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
   }
 }

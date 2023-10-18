@@ -1,125 +1,59 @@
 import * as vscode from "vscode";
+import * as ejs from "ejs";
 import IChallenge from "./interface/Challenge";
 import Hackerrank from "./Hackerrank";
 import Language from "./Language";
 import Database from "./Database";
 
+interface IChallengeEditor {
+  webviewPanel: vscode.WebviewPanel;
+  editors: vscode.TextDocument[];
+  data: IChallenge;
+}
+
 export default class Challenge {
-  static getChallengeContent(challenge: IChallenge) {
-    // TODO: Migrate to Pug
-    return `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${challenge.name}</title>
-    <style>
-      body {
-        border-left: 3px solid #00EA64;
-      }
-      h1 {
-        font-size: 30px
-      }
-      code, svg, li, .highlight, p, pre {
-        font-size: 16px;
-      }
-      li {
-        margin: 5px 0;
-      }
-      pre {
-        background-color: rgba(0, 0, 0, 0.4);
-        padding: 10px;
-        border-radius: 10px;
-      }
-      h1, h2, h3, h4, h5, h6, p, code, svg, li, .highlight, pre {
-        color: white;
-      }
-      p, li {
-        line-height: 1.7;
-      }
-      .btn {
-        font-size: 15px;
-        padding: 10px 25px;
-        border: none;
-        cursor: pointer;
-        font-weight: 500;
-        border-radius: 3px;
-      }
-      .buttons::after {
-        content: "";
-        display: table;
-        clear: both;
-      }
-      .solve {
-        background-color: #00EA64;
-      }
-      .run {
-        float: right;
-        background-color: #F4F4F5;
-        margin-right: 10px;
-      }
-      .submit {
-        float: right;
-        background-color: #00EA64;
-      }
-      .disable {
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>${challenge.name}</h1>
-    <div class="buttons">
-      <button class="btn solve" onclick="solve()">Solve</button>
-      <button class="btn submit disable" onclick="execute('submit')" disabled>Submit</button>
-      <button class="btn run disable" onclick="execute('run')" disabled>Run</button>
-    </div>
-    ${challenge.questionHtml}
-    <script>
-      const vscode = acquireVsCodeApi();
-      function solve() {
-        vscode.postMessage({
-          event: 'solve',
-          challenge: ${JSON.stringify(challenge)}
-        });
-      }
+  static challenges: Record<string, IChallengeEditor> = {};
 
-      function execute(type) {
-        vscode.postMessage({
-          event: type,
-          challenge: ${JSON.stringify(challenge)}
-        });
-      }
-    </script>
-  </body>
-</html>`;
-  }
+  static async renderChallenge(challengeSlug: string, trackSlug: string) {
+    const challengeData = await Hackerrank.getChallenge(challengeSlug);
 
-  static async renderChallenge(challengeSlug: string) {
-    const challenge = await Hackerrank.getChallenge(challengeSlug);
-    if (!challenge) return;
+    if (!challengeData) return;
+
+    challengeData.trackSlug = trackSlug;
 
     const challengePane = vscode.window.createWebviewPanel(
-      challenge.id.toString(),
-      challenge.name,
+      challengeData.slug,
+      challengeData.name,
       vscode.ViewColumn.Active,
       {
         enableScripts: true,
       }
     );
 
-    challengePane.webview.html = this.getChallengeContent(challenge);
+    this.challenges[challengeData.slug] = {
+      webviewPanel: challengePane,
+      editors: [],
+      data: challengeData,
+    };
+
+    const challengeTemplatePath =
+      "/media/suyash/HDD/realwork/hackerrank-vscode/src/templates/challenge.ejs";
+    const challengeHtml = await ejs.renderFile(
+      challengeTemplatePath,
+      challengeData
+    );
+
+    challengePane.webview.html = challengeHtml;
 
     challengePane.webview.onDidReceiveMessage(
-      async (message) =>
-        await this.handleMessageFromWebView(message, challengePane.webview)
+      async (message) => await this.handleMessageFromWebView(message)
     );
 
     return challengePane;
   }
 
-  static async handleMessageFromWebView(message: any, webview: vscode.Webview) {
-    let { event, challenge }: { event: string; challenge: IChallenge } =
+  static async handleMessageFromWebView(message: any) {
+    let { event, challengeSlug }: { event: string; challengeSlug: string } =
       message;
 
     switch (event) {
@@ -129,59 +63,68 @@ export default class Challenge {
          * ! When the event is triggered, a new context is created and 'this' references to that.
          * ! Do not change to 'this.openEditor(challenge)'
          */
-        await Challenge.openEditor(challenge);
+        await Challenge.openEditor(this.challenges[challengeSlug]);
         break;
       case "run":
-        break;
+        await Challenge.runCode(this.challenges[challengeSlug]);
       case "submit":
         break;
     }
   }
 
-  static async openEditor(challenge: IChallenge) {
+  static async openEditor(challenge: IChallengeEditor) {
+    const { data: challengeData, editors: challengeEditors } = challenge;
     const languageChosen = await vscode.window.showQuickPick(
-      challenge.languages.map((lang) => new Language(lang))
+      challengeData.languages.map((lang) => new Language(lang))
     );
 
     if (!languageChosen) return;
 
-    let fileName = `${challenge.slug}-${languageChosen.value}${languageChosen.extension}`;
+    let fileName = `${challengeData.slug}-${languageChosen.value}${languageChosen.extension}`;
 
-    let url = await Database.fetchSolutionFile(
+    let url = await Database.fetchSolutionFileUrl(
       fileName,
-      challenge.trackSlug as string
+      challenge.data.trackSlug as string
     );
 
     if (!url) {
       let boilerplate = "";
       if (
-        challenge.languagesBoilerplate[`${languageChosen.value}_template_head`]
+        challengeData.languagesBoilerplate[
+          `${languageChosen.value}_template_head`
+        ]
       ) {
         boilerplate +=
-          challenge.languagesBoilerplate[
+          challengeData.languagesBoilerplate[
             `${languageChosen.value}_template_head`
           ];
       }
 
-      if (challenge.languagesBoilerplate[`${languageChosen.value}_template`]) {
+      if (
+        challengeData.languagesBoilerplate[`${languageChosen.value}_template`]
+      ) {
         boilerplate +=
-          challenge.languagesBoilerplate[`${languageChosen.value}_template`];
+          challengeData.languagesBoilerplate[
+            `${languageChosen.value}_template`
+          ];
       } else {
         boilerplate += languageChosen.default_boilerplate;
       }
 
       if (
-        challenge.languagesBoilerplate[`${languageChosen.value}_template_tail`]
+        challengeData.languagesBoilerplate[
+          `${languageChosen.value}_template_tail`
+        ]
       ) {
         boilerplate +=
-          challenge.languagesBoilerplate[
+          challengeData.languagesBoilerplate[
             `${languageChosen.value}_template_tail`
           ];
       }
 
       url = await Database.createSolutionFile(
         fileName,
-        challenge.trackSlug as string,
+        challengeData.trackSlug as string,
         boilerplate
       );
     }
@@ -190,8 +133,78 @@ export default class Challenge {
       vscode.Uri.file(url)
     );
 
-    vscode.window.showTextDocument(codeEditor, {
+    await vscode.window.showTextDocument(codeEditor, {
       viewColumn: vscode.ViewColumn.Beside,
     });
+
+    challengeEditors.push(codeEditor);
   }
+
+  static async runCode(challenge: IChallengeEditor) {
+    const visibleEditors = vscode.window.visibleTextEditors;
+    console.log(visibleEditors.length);
+
+    if (!visibleEditors.length) {
+      vscode.window.showErrorMessage(
+        "Open the code file which you want execute."
+      );
+    }
+
+    if (visibleEditors.length === 1) {
+      if (challenge.editors.indexOf(visibleEditors[0].document) >= 0) {
+        const solution = visibleEditors[0].document.getText();
+        console.log(solution);
+      } else {
+        vscode.window.showErrorMessage(
+          "Solution file not found. Make sure it is visible while clicking on the 'Run' button"
+        );
+      }
+    }
+
+    if (visibleEditors.length > 1) {
+      const validEditors: vscode.TextEditor[] = [];
+      for (let editor of visibleEditors) {
+        if (challenge.editors.indexOf(editor.document) !== -1) {
+          validEditors.push(editor);
+        }
+      }
+
+      const chosenEditor = await vscode.window.showQuickPick(
+        validEditors.map((editor) => {
+          let indexOfLastForwardSlash =
+            editor.document.fileName.lastIndexOf("/");
+          let label = editor.document.fileName.slice(
+            indexOfLastForwardSlash + 1
+          );
+          return {
+            label,
+            value: editor,
+          };
+        })
+      );
+
+      console.log(chosenEditor?.value.document.getText());
+    }
+  }
+
+  // static async updateWebviewState(closedDocument?: vscode.TextDocument) {
+  //   for (let [
+  //     webviewPanel,
+  //     associatedCodeEditors,
+  //   ] of Object.entries(this.challenges)) {
+  //     let indexOfClosedDocument = associatedCodeEditors.indexOf(
+  //       closedDocument as vscode.TextDocument
+  //     );
+  //     if (indexOfClosedDocument !== -1) {
+  //       webviewPanel.webview.postMessage({
+  //         event: "enable",
+  //       });
+  //     } else {
+  //       console.log("disable");
+  //       webviewPanel.webview.postMessage({
+  //         event: "disable",
+  //       });
+  //     }
+  //   }
+  // }
 }

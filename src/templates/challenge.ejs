@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= name %></title>
+    <style>
+      body {
+        border-left: 3px solid #00ea64;
+      }
+      h1 {
+        font-size: 30px;
+      }
+      code,
+      svg,
+      li,
+      .highlight,
+      p,
+      pre {
+        font-size: 16px;
+      }
+      li {
+        margin: 5px 0;
+      }
+      pre {
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 10px;
+        border-radius: 10px;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      p,
+      code,
+      svg,
+      li,
+      .highlight,
+      pre {
+        color: white;
+      }
+      p,
+      li {
+        line-height: 1.7;
+      }
+      .btn {
+        font-size: 15px;
+        padding: 10px 25px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        border-radius: 3px;
+      }
+      .buttons::after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+      .solve {
+        background-color: #00ea64;
+      }
+      .run {
+        float: right;
+        background-color: #f4f4f5;
+        margin-right: 10px;
+      }
+      .submit {
+        float: right;
+        background-color: #00ea64;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><%= name %></h1>
+    <div class="buttons">
+      <button id="solve" class="btn solve" onclick="solve()">Solve</button>
+      <button id="submit" class="btn submit" onclick="execute('submit')">
+        Submit
+      </button>
+      <button id="run" class="btn run" onclick="execute('run')">Run</button>
+    </div>
+    <%- questionHtml %>
+    <script>
+      let openCodeEditorsCount = 0;
+      const vscode = acquireVsCodeApi();
+
+      function solve() {
+        console.log("hey");
+        vscode.postMessage({
+          event: "solve",
+          challengeSlug: "<%= slug %>",
+        });
+      }
+
+      function execute(type) {
+        console.log("I am mada");
+        vscode.postMessage({
+          event: type,
+          challengeSlug: "<%= slug %>",
+        });
+      }
+    </script>
+  </body>
+</html>
