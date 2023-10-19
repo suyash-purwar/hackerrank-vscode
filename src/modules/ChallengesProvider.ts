@@ -43,40 +43,58 @@ export default class ChallengeProvider
   }
 
   async getTracks(): Promise<TrackTreeItem[] | undefined> {
-    const tracks = await Hackerrank.getTracks();
+    try {
+      const tracks = await Hackerrank.getTracks();
 
-    if (!tracks) return;
+      if (!tracks) return;
 
-    const trackTreeItems = tracks.map((tr) => {
-      return new TrackTreeItem(tr.id, tr.slug, tr.name);
-    });
+      const trackTreeItems = tracks.map((tr) => {
+        return new TrackTreeItem(tr.id, tr.slug, tr.name);
+      });
 
-    return trackTreeItems;
+      return trackTreeItems;
+    } catch (e) {
+      vscode.window.showErrorMessage(
+        "Failed to load challege tracks. Make sure you are connected to internet."
+      );
+    }
   }
 
   async getTrackChallenges(
     trackSlug: string
   ): Promise<TrackChallengeTreeItem[] | undefined> {
-    const trackChallenges = await Hackerrank.getTracksChallenges(trackSlug);
+    try {
+      const trackChallenges = await Hackerrank.getTracksChallenges(trackSlug);
 
-    if (!trackChallenges) return;
+      if (!trackChallenges) return;
 
-    const trackChallengesTreeItems = trackChallenges.challenges.map((tc) => {
-      return new TrackChallengeTreeItem(tc.id, tc.slug, tc.name, trackSlug);
-    });
+      const trackChallengesTreeItems = trackChallenges.challenges.map((tc) => {
+        return new TrackChallengeTreeItem(tc.id, tc.slug, tc.name, trackSlug);
+      });
 
-    return trackChallengesTreeItems;
+      return trackChallengesTreeItems;
+    } catch (e) {
+      vscode.window.showErrorMessage(
+        "Failed to load challeges. Make sure you are connected to internet."
+      );
+    }
   }
 
   static async getChallenge(
     event: vscode.TreeViewSelectionChangeEvent<vscode.TreeItem>
   ) {
-    const selectedItem = event.selection[0] as TrackChallengeTreeItem;
+    try {
+      const selectedItem = event.selection[0] as TrackChallengeTreeItem;
 
-    if (selectedItem.type === "challenge") {
-      await Challenge.renderChallenge(
-        selectedItem.slug,
-        selectedItem.trackSlug
+      if (selectedItem.type === "challenge") {
+        await Challenge.renderChallenge(
+          selectedItem.slug,
+          selectedItem.trackSlug
+        );
+      }
+    } catch (e) {
+      vscode.window.showErrorMessage(
+        "Failed to load this challenge. Make sure you are connected to internet."
       );
     }
   }

@@ -32,10 +32,24 @@ export default class Authentication {
         password as string
       );
 
-      await Database.saveSession(session as ISession);
-      console.log(email, password);
-      ChallengeProvider.loadMainTree();
+      if (session) {
+        await Database.saveSession(session as ISession);
+        ChallengeProvider.loadMainTree();
+      }
       return false;
-    } catch (e) {}
+    } catch (e: any) {
+      switch (e.message) {
+        case "AUTHENTICATION_FAILED":
+          await vscode.window.showErrorMessage(
+            "User authentication failed. Make sure your credentails are correct."
+          );
+          break;
+        default:
+          await vscode.window.showErrorMessage(
+            "Seems like you are disconnected from internet."
+          );
+          break;
+      }
+    }
   }
 }
