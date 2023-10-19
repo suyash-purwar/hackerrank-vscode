@@ -221,29 +221,11 @@ export default class Challenge {
 
     if (!solution) return;
 
-    const result = await Hackerrank.runCode(challenge.data.slug, solution);
+    const result = await Hackerrank.initiateCodeRun(
+      challenge.data.slug,
+      solution
+    );
 
-    console.log(solution);
+    console.log(result);
   }
-
-  // static async updateWebviewState(closedDocument?: vscode.TextDocument) {
-  //   for (let [
-  //     webviewPanel,
-  //     associatedCodeEditors,
-  //   ] of Object.entries(this.challenges)) {
-  //     let indexOfClosedDocument = associatedCodeEditors.indexOf(
-  //       closedDocument as vscode.TextDocument
-  //     );
-  //     if (indexOfClosedDocument !== -1) {
-  //       webviewPanel.webview.postMessage({
-  //         event: "enable",
-  //       });
-  //     } else {
-  //       console.log("disable");
-  //       webviewPanel.webview.postMessage({
-  //         event: "disable",
-  //       });
-  //     }
-  //   }
-  // }
 }

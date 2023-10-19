@@ -1,12 +1,10 @@
 import IChallenge from "./interface/Challenge";
-import ISession from "./interface/Session";
 import ITrack from "./interface/Track";
 import ITrackChallenges from "./interface/TrackChallenges";
 import ISolution from "./interface/Solution";
 
 export default class Hackerrank {
   static readonly BASE_URI = "https://www.hackerrank.com/rest";
-  static session: ISession = {};
 
   constructor() {}
 
@@ -24,15 +22,13 @@ export default class Hackerrank {
   static async login(email: string, password: string) {
     try {
       const sessionKey = await this.getCookie();
-      this.session.hackerrank_cookie = sessionKey;
-      this.session.email = email;
 
       const url = `${this.BASE_URI}/auth/login`;
       const headers = {
         Cookie: sessionKey,
         "Content-Type": "application/json",
       };
-      const data = JSON.stringify({
+      const body = JSON.stringify({
         login: email,
         password,
         remember_me: false,
@@ -41,7 +37,7 @@ export default class Hackerrank {
       const requestOptions = {
         method: "POST",
         headers,
-        body: data,
+        body,
       };
 
       // @ts-ignore
@@ -52,9 +48,11 @@ export default class Hackerrank {
         throw new Error("AUTHENTICATION_FAILED");
       }
 
-      this.session.csrf_token = responseData.csrf_token;
-
-      return this.session;
+      return {
+        email,
+        hackerrank_cookie: sessionKey,
+        csrf_token: responseData.csrf_token,
+      };
     } catch (e) {
       console.log(e);
     }
@@ -176,11 +174,42 @@ export default class Hackerrank {
     }
   }
 
-  static runCode(challengeSlug: string, solution: ISolution) {
+  static async initiateCodeRun(challengeSlug: string, solution: ISolution) {
     try {
+      const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/compile_tests`;
+      // @ts-ignore
+      const headers = new Headers({
+        Cookie: process.env.HACKERRANK_COOKIE,
+        "X-Csrf-Token": process.env.CSRF_TOKEN,
+        "Content-Type": "application/json",
+      });
+      headers.forEach((key: string, value: string) => {
+        console.log(key, value);
+      });
+      const body = JSON.stringify({
+        customtestcase: false,
+        playlist_slug: "",
+        ...solution,
+      });
+      const requestOptions = {
+        method: "POST",
+        headers,
+        body,
+      };
+
+      // @ts-ignore
+      const response = await fetch(url, requestOptions);
+      const responseData = await response.json();
+      console.log(responseData);
+
+      return responseData;
     } catch (e) {
       // Publish error
       console.log(e);
     }
   }
+
+  static getCodeRunStatus(id: number) {}
+  static initiateCodeSubmission(challengeSlug: string, solution: ISolution) {}
+  static getCodeSubmissionStatus(id: number) {}
 }
