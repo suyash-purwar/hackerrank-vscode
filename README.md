@@ -11,8 +11,11 @@
 This project was an attempt to bring Hackerrrank into our good old VS Code as an extension. This extension allows us to levarage the in-built debugging tools, version control system, and infinite customizability of VS Code.
 
 Hackerrank does not come with debugging tools and neither has direct integration with Github for version control. Snippet support is not very flexible as well. Most of the developers are much adept to VS Code and would rather prefer coding here than on the hackerrank platform. This is where this extension comes in!
+<br><br>
 
-<img src="./media/main.gif" width="100%">
+<p style="text-align: center"><img src="./media/main.gif" width="90%"></p>
+
+<br>
 
 ## Install
 
@@ -49,48 +52,15 @@ Hackerrank does not provide any out of the box API to access their platform's ca
 For example, to detect a the API endpoint for fetching all the challenges for a specific topic, say Java, here's how I found the endpoint.
 
 1. Open your browser and and press F12 to open developer tools. Go to the network tab.
-2. Now, open the page for which you want to see network calls for. In my case, it's `hackerrank.com/domain/java`
+
+2. Now, open the page for which you want to see network calls for. In my case, it's `hackerrank.com/domain/java`.
+
 3. A bunch of network calls will appear. In our case we are just looking for Fetch/XHR API calls. In the below image, I have set up a filter to show only those requests.
+
 4. This filter shortens our list of network calls. Now, we just need to explore these calls. With some exploration, it becomes clear which call is for what.
+
 5. Upon selecting a particular call, another pain opens which contains details for that particular call. The Header, Payload, Response, and Cookie tabs can tell us the whole anaotomy of the call.
-
-![Browser Inspection](./media/inspection.png)
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+<br><br>
+<p style="text-align: center;"><img src="./media/inspection.png" width="90%"/></p>
 
 **Enjoy!**
-
-```
-
-```
