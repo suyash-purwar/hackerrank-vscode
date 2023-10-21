@@ -1,14 +1,16 @@
-# Hackerrank ❤️ VS Code (I want cookies!)
+# Hackerrank ❤️ VS Code
+
+### Solve Hackerrank challenges from VS Code itself! 🥳
 
 ![Static Badge](https://img.shields.io/badge/BUILT_FOR-HACKERRANK-%2301ac4b?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/BUILT_WITH-LOVE-orange?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/STATUS-FAILING-red?style=for-the-badge)
 
-![Demo]('https://github.com/Suyash-Purwar/hackerrank-vscode/blob/master/media/main.gif')
+This project was an attempt to bring Hackerrrank into our good old VS Code as an extension. This extension allows us to levarage the in-built debugging tools, version control system, and infinite customizability of VS Code.
 
-This project was an attempt to bring Hackerrrank into our good old VS Code as an extension. I'm unable to get valid cookies resulting in completion of this project.
+Hackerrank does not come with debugging tools and neither has direct integration with Github for version control. Snippet support is not very flexible as well. Most of the developers are much adept to VS Code and would rather prefer coding here than on the hackerrank platform. This is where this extension comes in!
 
-I tried multiple ways to get valid set of cookies and tokens programmatically but it isn't working out as I had expected it to be.
+<img src="./media/main.gif" width="100%">
 
 ## Features
 
