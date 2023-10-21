@@ -1,6 +1,14 @@
-# Hackerrank VSCode
+# Hackerrank ❤️ VS Code (I want cookies!)
 
-This is the README for your extension "hackerrank-vscode". After writing up a brief description, we recommend including the following sections.
+![Static Badge](https://img.shields.io/badge/BUILT_FOR-HACKERRANK-%2301ac4b?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/BUILT_WITH-LOVE-orange?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/STATUS-FAILING-red?style=for-the-badge)
+
+![Demo]('https://github.com/Suyash-Purwar/hackerrank-vscode/blob/master/media/main.gif')
+
+This project was an attempt to bring Hackerrrank into our good old VS Code as an extension. I'm unable to get valid cookies resulting in completion of this project.
+
+I tried multiple ways to get valid set of cookies and tokens programmatically but it isn't working out as I had expected it to be.
 
 ## Features
 
