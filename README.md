@@ -32,7 +32,7 @@ git clone https://github.com/Suyash-Purwar/hackerrank-vscode.git
 cd hackerrank-vscode && code .
 ```
 
-3. Press 'F5' to start the debugger. A new VS Code will open with the extension running.
+3. Press 'F5' to start the debugger. A new VS Code window will open with the extension running.
 
 ## Hackerrank provides an API for developers, right?
 
@@ -57,7 +57,7 @@ For example, to detect an API endpoint for fetching all the challenges for a spe
 
 All the requests requiring user authentication are failing. For a user to be authenticated, following is required:
 
-1. `_hrank_session`: This session is receive when a user visits `hackerrank.com`
+1. `_hrank_session`: This session is receive when a user visits `hackerrank.com/auth/login`
 2. `X-Csrf-Token`: This token is used to prevent Cross-Site Forgery Attack. It is recieve when a user is authenticated (after sign in).
 
 The `/auth/login` route is hit with a user password and email along with `_hrank_session`. Upon successful validation, the `X-Csrf-Token` is recieved.
@@ -78,7 +78,5 @@ Things I've tried:
 
 - Using a headless browser, Puppeteer: In headless mode, I'm not receiving any cookies whatsoever. This is most likely intentional and a security measure.
 - Selenium: I suspected that the browser is sending some extra tokens (third-party tokens that I'm not receiving on making a GET call) or info to generate a valid `X-Csrf-Token` token. So, I thought of opening the hackerrank.com/auth/login on a browser and then fetching all the cookies (including third-party ones). This did not work, unfortunately.
-
-GIMME VALID COOKIE!
 
 <img width="30%" src="https://media.makeameme.org/created/gimme-that-cookie.jpg">

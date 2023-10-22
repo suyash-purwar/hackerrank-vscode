@@ -13,8 +13,9 @@ export default class Hackerrank {
 
     // @ts-ignore
     const response = await fetch(url, {
-      method: "GET",
+      method: "HEAD",
     });
+
     const cookie = response.headers.get("set-cookie") as string;
     return cookie;
   }
