@@ -12,6 +12,9 @@ export default class Hackerrank {
     const url = "https://www.hackerrank.com/auth/login";
 
     // @ts-ignore
+    // Node.js >= 18.x.x supports the use of Fetch API.
+    // Though TS Node typebindings do not support it.
+    // Keep '@ts-ignore' up until it's supported.
     const response = await fetch(url, {
       method: "HEAD",
     });
