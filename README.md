@@ -12,8 +12,6 @@ This project was an attempt to bring Hackerrrank into our good old VS Code as an
 
 Hackerrank does not come with debugging tools and neither has direct integration with Github for version control. Snippet support is not very flexible. Most of the developers are much more adept at VS Code and would rather prefer coding here than on the hackerrank platform. This is where this extension comes in!
 
-> Honestly, I did this so that I can get noticed in a pile of applications they recieve for an intern position. I hope I get to be a part of their cool team.
-
 <br>
 
 <img src="./media/main.gif" width="90%">
@@ -57,16 +55,16 @@ To understand why this project is failing, some knowledge of how Hackerrank work
 
 ## How am I getting user cookies? (Failing)
 
-I thought I would sniff all the necessary cookies and tokens to forge a fake request to authenticate the user. Upon successful authentication, I would store the necessary cookies and tokens locally in the `$HOME/.config/hackerrank/.hackerrankrc` file. For any subsequent routes requests, I would read these cookies from file system and send them. If the cookie gets expired, auth flow will be initiated again.
+I thought I would sniff all the necessary cookies and tokens to forge a fake request to authenticate the user. Upon successful authentication, I would store the necessary cookies and tokens locally in the `$HOME/.config/hackerrank/.hackerrankrc` file. For any protected requests, I would read these cookies from the file system and send them. If the cookie expires, the auth flow will be initiated again.
 
-This approach of mine is called CSRF (Cross-Site Request Forgery) Attack. When I started this project, I was unaware that what I'm doing is a well-known attack. After building everything, I realized Hackerrank has a security mechanism in place to prevent this, which is the usage of `Anti-CSRF` tokens because of which this project seems to be failing.
+This approach is called a CSRF (Cross-Site Request Forgery) Attack. When I started this project, I was unaware that what I was doing was a well-known attack. After building everything, I realized Hackerrank has a security mechanism in place to prevent this, which is the usage of `Anti-CSRF` tokens because of which this project seems to be failing.
 
-After an inspection of few hours I understood that hackerrank sends three cookies `_hrank_session`, `hackerrank_mixpanel_token`, and `hrc_l_i` and an `Anti-CSRF token` to the browser on the login page. When the user signs in, these cookies and token along with user credentials are sent to the server for authentication.
+After an inspection of a few hours, I understood that Hackerrank sends three cookies `_hrank_session`, `hackerrank_mixpanel_token`, and `hrc_l_i` and an `Anti-CSRF token` to the browser on the login page. When the user signs in, these cookies and the token along with user credentials are sent to the server for authentication.
 
-Initially, I did not know `Anti-CSRF token` needs to be sent as well. So, I was just sending cookies and user credentials and getting `X-Csrf-Token` token back. I happily saved the cookies and token thinking I cracked it. Later, I realized that these cookies and tokens are not getting accepted and I am unable to request to the protected routes like `\compile_tests`. Hackerrank intentionally sends invalid token when there's a problem with the request. Smart trick.
+Initially, I did not know `Anti-CSRF token` needed to be sent as well. So, I was just sending cookies and user credentials and getting the `X-Csrf-Token` token back. I happily saved the cookies and token thinking I cracked it. Later, I realized that these cookies and tokens are not getting accepted and I am unable to request to the protected routes like `\compile_tests`. Hackerrank intentionally sends an invalid token when there's a problem with the request. Smart trick.
 
-After some more hacking, I understood that they are using `Anti-CSRF` tokens to prevent what I'm trying to do. So, I thought, why not scrape this `Anti-CSRF`. These tokens are generally embedded in the forms, cookies, or somewhere on the page. I tried going through the codebase but couldn't find any trace of it.
+After some more hacking, I understood that they were using `Anti-CSRF` tokens to prevent what I was trying to do. So, I thought, why not scrape this `Anti-CSRF` token? These tokens are generally embedded in the forms, cookies, or somewhere on the page. I tried going through the codebase in the hopes of finding it but couldn't find any trace of it.
 
-Due to this, my extension is unable to run and submit the code. I learnt a lot though.
+Due to this, my extension is unable to run and submit the code. I learned a lot though.
 
 <img width="30%" src="https://media.makeameme.org/created/gimme-that-cookie.jpg">
