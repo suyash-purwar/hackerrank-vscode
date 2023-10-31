@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import Database from "./Database";
 import Hackerrank from "./Hackerrank";
 import ChallengeProvider from "./ChallengesProvider";
-import ISession from "./interface/Session";
 
 export default class Authentication {
   constructor() {}
@@ -33,7 +32,7 @@ export default class Authentication {
       );
 
       if (session) {
-        await Database.saveSession(session as ISession);
+        await Database.saveSession(session);
         ChallengeProvider.loadMainTree();
       }
       return false;
@@ -45,6 +44,7 @@ export default class Authentication {
           );
           break;
         default:
+          console.log(e);
           await vscode.window.showErrorMessage(
             "Seems like you are disconnected from internet."
           );

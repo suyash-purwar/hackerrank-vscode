@@ -1,5 +1,6 @@
 import IChallenge from "./interface/Challenge";
 import ITrack from "./interface/Track";
+import ISession from "./interface/Session";
 import ITrackChallenges from "./interface/TrackChallenges";
 import ISolution from "./interface/Solution";
 
@@ -23,13 +24,42 @@ export default class Hackerrank {
     return cookie;
   }
 
-  static async login(email: string, password: string) {
-    const sessionKey = await this.getCookie();
+  /**
+   * Returns Cookie and CSRF token if the cookie is not provided
+   * Refreshes the CSRF token if the cookies is provided
+   */
+  static async getCookieAndCSRFToken(cookie: string | undefined = undefined) {
+    const url = "https://www.hackerrank.com/auth/login";
+
+    const headers = {} as any;
+    if (cookie) headers["Cookie"] = cookie;
+
+    // @ts-ignore
+    const response = await fetch(url, {
+      method: "GET",
+      headers,
+    });
+    const responseData = await response.text();
+
+    const index = responseData.indexOf(`name="csrf-token`);
+    const token: string = responseData.slice(index - 90, index - 2);
+
+    if (!cookie) cookie = response.headers.get("set-cookie") as string;
+
+    return { cookie, token };
+  }
+
+  static async login(email: string, password: string): Promise<ISession> {
+    const session: ISession = { email };
+
+    const { cookie: sessionKey, token: seedCsrfToken } =
+      await this.getCookieAndCSRFToken();
 
     const url = `${this.BASE_URI}/auth/login`;
     const headers = {
       Cookie: sessionKey,
       "Content-Type": "application/json",
+      "X-Csrf-Token": seedCsrfToken,
     };
     const body = JSON.stringify({
       login: email,
@@ -51,11 +81,10 @@ export default class Hackerrank {
       throw new Error("AUTHENTICATION_FAILED");
     }
 
-    return {
-      email,
-      hackerrank_cookie: sessionKey,
-      csrf_token: responseData.csrf_token,
-    };
+    session["csrf_token"] = responseData.csrf_token;
+    session["hackerrank_cookie"] = sessionKey;
+
+    return session;
   }
 
   static async getTracks() {
