@@ -12,6 +12,24 @@ export default class Authentication {
     return process.env.CSRF_TOKEN && process.env.HACKERRANK_COOKIE;
   }
 
+  // static async refreshCSRFToken() {
+  //   console.log(process.env.HACKERRANK_COOKIE);
+  //   console.log(process.env.EMAIL);
+  //   const { token } = await Hackerrank.getCookieAndCSRFToken(
+  //     process.env.HACKERRANK_COOKIE
+  //   );
+  //   console.log(token);
+  //   await Database.saveSession({
+  //     email: process.env.EMAIL,
+  //     csrf_token: token,
+  //     hackerrank_cookie: process.env.HACKERRANK_COOKIE,
+  //   });
+
+  //   console.log(process.env.HACKERRANK_COOKIE);
+  //   console.log(process.env.EMAIL);
+  //   console.log(process.env.CSRF_TOKEN);
+  // }
+
   static async login() {
     try {
       const email = await vscode.window.showInputBox({

@@ -24,28 +24,19 @@ export default class Hackerrank {
     return cookie;
   }
 
-  /**
-   * Returns Cookie and CSRF token if the cookie is not provided
-   * Refreshes the CSRF token if the cookies is provided
-   */
-  static async getCookieAndCSRFToken(cookie: string | undefined = undefined) {
+  static async getCookieAndCSRFToken() {
     const url = "https://www.hackerrank.com/auth/login";
-
-    const headers = {} as any;
-    if (cookie) headers["Cookie"] = cookie;
 
     // @ts-ignore
     const response = await fetch(url, {
       method: "GET",
-      headers,
     });
     const responseData = await response.text();
 
     const index = responseData.indexOf(`name="csrf-token`);
     const token: string = responseData.slice(index - 90, index - 2);
 
-    if (!cookie) cookie = response.headers.get("set-cookie") as string;
-
+    const cookie = response.headers.get("set-cookie") as string;
     return { cookie, token };
   }
 
@@ -194,9 +185,6 @@ export default class Hackerrank {
       "X-Csrf-Token": process.env.CSRF_TOKEN,
       "Content-Type": "application/json",
     });
-    headers.forEach((key: string, value: string) => {
-      console.log(key, value);
-    });
     const body = JSON.stringify({
       customtestcase: false,
       playlist_slug: "",
@@ -211,12 +199,28 @@ export default class Hackerrank {
     // @ts-ignore
     const response = await fetch(url, requestOptions);
     const responseData = await response.json();
-    console.log(responseData);
 
     return responseData;
   }
 
-  static getCodeRunStatus(id: number) {}
+  static async getCodeRunStatus(challengeSlug: string, submissionId: number) {
+    const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/compile_tests/${submissionId}`;
+    // @ts-ignore
+    const headers = new Headers({
+      Cookie: process.env.HACKERRANK_COOKIE,
+      "X-Csrf-Token": process.env.CSRF_TOKEN,
+      "Content-Type": "application/json",
+    });
+    const requestOptions = {
+      method: "GET",
+      headers,
+    };
+    // @ts-ignore
+    const response = await fetch(url, requestOptions);
+    const responseData = await response.json();
+
+    return responseData;
+  }
   static initiateCodeSubmission(challengeSlug: string, solution: ISolution) {}
   static getCodeSubmissionStatus(id: number) {}
 }

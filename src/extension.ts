@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 
 import Authenticate from "./modules/Authentication";
 import ChallengeProvider from "./modules/ChallengesProvider";
-import Challenge from "./modules/Challenge";
 
 export async function activate(context: vscode.ExtensionContext) {
   // * Add subscriptions

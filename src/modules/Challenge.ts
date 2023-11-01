@@ -221,11 +221,36 @@ export default class Challenge {
 
     if (!solution) return;
 
-    const result = await Hackerrank.initiateCodeRun(
+    const initiateCodeRunResponse = await Hackerrank.initiateCodeRun(
       challenge.data.slug,
       solution
     );
 
-    console.log(result);
+    const submissionId = initiateCodeRunResponse.model.id;
+
+    let executionStatus = 0;
+    let seed = 500;
+    let incrementByMultipleOf = 100;
+    let tries = 0;
+
+    let apiPoller = setInterval(async () => {
+      let codeRunStatusResponse = await Hackerrank.getCodeRunStatus(
+        challenge.data.slug,
+        submissionId
+      );
+      executionStatus = codeRunStatusResponse.model.status;
+      if (executionStatus === 0 && tries === 0) {
+        vscode.window.showInformationMessage("Running your code");
+        console.log(tries, executionStatus, codeRunStatusResponse);
+      } else if (executionStatus === 1) {
+        vscode.window.showInformationMessage("Executed your code");
+        console.log(tries, executionStatus, codeRunStatusResponse);
+        clearInterval(apiPoller);
+      } else if (tries >= 5) {
+        console.log(tries, executionStatus, codeRunStatusResponse);
+        clearInterval(apiPoller);
+      }
+      tries++;
+    }, seed + incrementByMultipleOf * tries);
   }
 }
