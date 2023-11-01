@@ -1,10 +1,17 @@
-# Hackerrank in VS Code 🤝
+# <center> HackerRank + VS Code </center>
 
-### Solve Hackerrank challenges from VS Code itself!
+<img src="./media/header.png" width="100%">
+
+### <center> HackerRank + VS Code lets you solve HackerRank challenges in VS Code </center>
+
+<center>
 
 ![Static Badge](https://img.shields.io/badge/BUILT_FOR-HACKERRANK-%2301ac4b?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/BUILT_WITH-LOVE-orange?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/STATUS-SUCCESS-blue?style=for-the-badge)
+
+</center>
+<br>
 
 ## 0. Table of Contents
 
@@ -33,7 +40,7 @@ Hackerrank does not come with debugging tools and neither has direct integration
 
 <br>
 
-<img src="./media/main.gif">
+<img src="./media/main.gif" width="100%">
 
 ## 2. Install
 
@@ -70,7 +77,7 @@ For example, to detect an API endpoint for fetching all the challenges for a spe
 5. Upon selecting a particular call, another pain opens which contains details for that particular call. The Header, Payload, Response, and Cookie tabs can tell us the whole anatomy of the call.
    <br>
 
-<img src="./media/inspection.png"/>
+<img src="./media/inspection.png" width="100%"/>
 
 ### 3.2 But what about protected routes?
 
@@ -92,7 +99,7 @@ Based on my personal analysis, it appears that the generated CSRF token is mappe
 
 Below is a pictorial representation of how authentication takes place.
 
-<img src="./media/authentication.png"/>
+<img src="./media/authentication.png"  width="100%" />
 
 ### 3.4 How the extension authenticates the users?
 
@@ -112,4 +119,4 @@ I eventually found it in the `meta` tag. I wrote a simple script to scrape it ou
 
 Tokens and cookies will be read from the file system to make a request to the protected routes.
 
-<img src="./media/extension.png">
+<img src="./media/extension.png"  width="100%" />
