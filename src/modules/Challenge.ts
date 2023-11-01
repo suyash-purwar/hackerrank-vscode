@@ -13,6 +13,7 @@ interface IChallengeEditor {
     language: string;
   }[];
   data: IChallenge;
+  testcasesPane?: vscode.WebviewPanel;
 }
 
 export default class Challenge {
@@ -245,6 +246,10 @@ export default class Challenge {
       } else if (executionStatus === 1) {
         vscode.window.showInformationMessage("Executed your code");
         console.log(tries, executionStatus, codeRunStatusResponse);
+        challenge.testcasesPane?.dispose();
+        challenge.testcasesPane = await this.openTestcasesView(
+          codeRunStatusResponse.model
+        );
         clearInterval(apiPoller);
       } else if (tries >= 5) {
         console.log(tries, executionStatus, codeRunStatusResponse);
@@ -252,5 +257,35 @@ export default class Challenge {
       }
       tries++;
     }, seed + incrementByMultipleOf * tries);
+  }
+
+  static async openTestcasesView(submissionData: any) {
+    const testcasesPane = vscode.window.createWebviewPanel(
+      "Ori bori",
+      "Testcases",
+      {
+        preserveFocus: true,
+        viewColumn: vscode.ViewColumn.Three,
+      },
+      {
+        enableScripts: true,
+      }
+    );
+
+    const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  ${JSON.stringify(submissionData, null, 3)}
+</body>
+</html>`;
+
+    testcasesPane.webview.html = html;
+    return testcasesPane;
   }
 }
