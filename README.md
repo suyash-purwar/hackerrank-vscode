@@ -33,7 +33,7 @@ Hackerrank does not come with debugging tools and neither has direct integration
 
 <br>
 
-<img src="./media/main.gif" width="90%">
+<img src="./media/main.gif">
 
 ## 2. Install
 
@@ -70,7 +70,7 @@ For example, to detect an API endpoint for fetching all the challenges for a spe
 5. Upon selecting a particular call, another pain opens which contains details for that particular call. The Header, Payload, Response, and Cookie tabs can tell us the whole anatomy of the call.
    <br>
 
-<img src="./media/inspection.png" width="90%"/>
+<img src="./media/inspection.png"/>
 
 ### 3.2 But what about protected routes?
 
@@ -92,7 +92,7 @@ Based on my personal analysis, it appears that the generated CSRF token is mappe
 
 Below is a pictorial representation of how authentication takes place.
 
-<img src="./media/authentication.png" width="90%"/>
+<img src="./media/authentication.png"/>
 
 ### 3.4 How the extension authenticates the users?
 
