@@ -230,33 +230,58 @@ export default class Challenge {
     const submissionId = initiateCodeRunResponse.model.id;
 
     let executionStatus = 0;
-    let seed = 500;
-    let incrementByMultipleOf = 100;
+    const seed = 500;
+    const incrementByMultipleOf = 200;
     let tries = 0;
 
-    let apiPoller = setInterval(async () => {
-      let codeRunStatusResponse = await Hackerrank.getCodeRunStatus(
-        challenge.data.slug,
-        submissionId
-      );
+    /**
+     * Everytime executionStatus is 0, API call is made with an increasing delay (by a factor of 200) to not overwhelm the server.
+     * Using nested setTimeout instead of setInterval for greater control.
+     * Allows for strict delay between two api calls. Read reference.
+     * Reference: https://javascript.info/settimeout-setinterval#nested-settimeout
+     */
+    let apiPoller = setTimeout(async function getSubmissionStatus() {
+      console.log(tries);
+      if (tries === 0) {
+        vscode.window.showInformationMessage(
+          "Hang in there! Running testcases."
+        );
+      }
+
+      let codeRunStatusResponse;
+      try {
+        codeRunStatusResponse = await Hackerrank.getCodeRunStatus(
+          challenge.data.slug,
+          submissionId
+        );
+      } catch (e) {
+        vscode.window.showErrorMessage(
+          "Failed to run your code. Make sure you are connected to internet."
+        );
+      }
+
       executionStatus = codeRunStatusResponse.model.status;
-      if (executionStatus === 0 && tries === 0) {
-        vscode.window.showInformationMessage("Running your code");
-        console.log(tries, executionStatus, codeRunStatusResponse);
-      } else if (executionStatus === 1) {
+      tries++;
+
+      if (executionStatus) {
         vscode.window.showInformationMessage("Executed your code");
         console.log(tries, executionStatus, codeRunStatusResponse);
         challenge.testcasesPane?.dispose();
-        challenge.testcasesPane = await this.openTestcasesView(
+        challenge.testcasesPane = await Challenge.openTestcasesView(
           codeRunStatusResponse.model
         );
-        clearInterval(apiPoller);
       } else if (tries >= 5) {
-        console.log(tries, executionStatus, codeRunStatusResponse);
-        clearInterval(apiPoller);
+        vscode.window.showErrorMessage(
+          "It is taking unusually long time to run you code. Check again after some time"
+        );
+      } else {
+        console.log(seed + incrementByMultipleOf * tries);
+        apiPoller = setTimeout(
+          getSubmissionStatus,
+          seed + incrementByMultipleOf * tries
+        );
       }
-      tries++;
-    }, seed + incrementByMultipleOf * tries);
+    }, seed);
   }
 
   static async openTestcasesView(submissionData: any) {
