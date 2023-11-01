@@ -1,10 +1,10 @@
-# Hackerrank 🤝 VS Code (Going beyond 'X-Hiring' header 😉)
+# Hackerrank in VS Code 🤝
 
-### Solve Hackerrank challenges from VS Code itself! 🥳
+### Solve Hackerrank challenges from VS Code itself!
 
 ![Static Badge](https://img.shields.io/badge/BUILT_FOR-HACKERRANK-%2301ac4b?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/BUILT_WITH-LOVE-orange?style=for-the-badge)
-![Static Badge](https://img.shields.io/badge/STATUS-FAILING-red?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/STATUS-SUCCESS-blue?style=for-the-badge)
 
 ## Overview
 
@@ -63,8 +63,8 @@ After an inspection of a few hours, I understood that Hackerrank sends three coo
 
 Initially, I did not know `Anti-CSRF token` needed to be sent as well. So, I was just sending cookies and user credentials and getting the `X-Csrf-Token` token back. I happily saved the cookies and token thinking I cracked it. Later, I realized that these cookies and tokens are not getting accepted and I am unable to request to the protected routes like `\compile_tests`. Hackerrank intentionally sends an invalid token when there's a problem with the request. Smart trick.
 
-After some more hacking, I understood that they were using `Anti-CSRF` tokens to prevent what I was trying to do. So, I thought, why not scrape this `Anti-CSRF` token? These tokens are generally embedded in the forms, cookies, or somewhere on the page. I tried going through the codebase in the hopes of finding it but couldn't find any trace of it.
+After some more hacking, I understood that they were using `Anti-CSRF` tokens to prevent what I was trying to do. So, I thought, why not scrape this `Anti-CSRF` token? These tokens are generally embedded in the forms, cookies, or somewhere on the page. It took me days to find where this token is but I eventually did.
 
-Due to this, my extension is unable to run and submit the code. I learned a lot though.
+Cookie, CSRF Token, and Email are being stored in the `.hackerrankrc` file as per the [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html). User credentials never leave the user's system.
 
 <img width="30%" src="https://media.makeameme.org/created/gimme-that-cookie.jpg">
