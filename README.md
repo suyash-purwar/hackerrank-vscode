@@ -1,17 +1,16 @@
-# <center> HackerRank + VS Code </center>
+<h1 align="center"> HackerRank + VS Code </h1>
 
 <img src="./media/header.png" width="100%">
 
-### <center> HackerRank + VS Code lets you solve HackerRank challenges in VS Code </center>
+<h3 align="center"> HackerRank + VS Code lets you solve HackerRank challenges in VS Code </h1>
 
-<center>
+<h6 align="center">
 
 ![Static Badge](https://img.shields.io/badge/BUILT_FOR-HACKERRANK-%2301ac4b?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/BUILT_WITH-LOVE-orange?style=for-the-badge)
 ![Static Badge](https://img.shields.io/badge/STATUS-SUCCESS-blue?style=for-the-badge)
 
-</center>
-<br>
+</h6>
 
 ## 0. Table of Contents
 
