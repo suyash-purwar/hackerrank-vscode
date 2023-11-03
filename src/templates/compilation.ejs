@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      p {
+        font-size: 15px;
+      }
+
+      h2 {
+        font-size: 30px;
+        line-height: 1;
+        margin: 20px 0;
+      }
+
+      .success {
+        color: #00ea64;
+      }
+
+      section {
+        margin-top: 40px;
+        border: 1px solid grey;
+        border-radius: 5px;
+        padding: 7px 10px 20px 10px;
+      }
+
+      section p {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      h4 {
+        font-size: 20px;
+        margin: 0;
+        display: inline-block;
+      }
+
+      .fail {
+        color: #d11534;
+      }
+
+      code {
+        display: block;
+        padding: 10px 13px;
+        border-radius: 5px;
+        background-color: rgb(31, 31, 31);
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="fail">Compilation Error :(</h2>
+    <p>Check the compiler output, fix the error and try again.</p>
+
+    <section>
+      <p>Compile Message</p>
+      <code> <%- compileMessage.replaceAll("\n", "<br />"); %> </code>
+
+      <p>Exit Status</p>
+      <code>
+        <p>1</p>
+      </code>
+    </section>
+  </body>
+</html>

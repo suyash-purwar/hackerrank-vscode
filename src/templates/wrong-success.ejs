@@ -1,0 +1,100 @@
+<!-- prettier-ignore -->
+<% let heading, subheading %>
+<% if (status) { %>
+  <% heading = "Congratulations! :)" %>
+  <% subheading = "You have passed the sample testcases. Click the submit button to run your code against all the code test cases."; %>
+<% } else { %>
+  <% heading = "Wrong answer :(" %>
+  <% subheading = "Check the compiler error, fix the error and try again"; %>
+<% } %>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testcase Results</title>
+    <style>
+      p {
+        font-size: 15px;
+      }
+
+      h2 {
+        font-size: 30px;
+        line-height: 1;
+        margin: 20px 0;
+      }
+
+      .success {
+        color: #00ea64;
+      }
+
+      section {
+        margin-top: 40px;
+        border: 1px solid grey;
+        border-radius: 5px;
+        padding: 20px 10px;
+      }
+
+      section p {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      h4 {
+        font-size: 20px;
+        margin: 0;
+        display: inline-block;
+      }
+
+      .fail {
+        color: #d11534;
+      }
+
+      code {
+        display: block;
+        padding: 10px 13px;
+        border-radius: 5px;
+        background-color: rgb(31, 31, 31);
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="<%= status ? 'success' : 'fail' %>"><%= heading %></h2>
+    <p><%= subheading %></p>
+
+    <% for (let testcase of testcaseResults) { %>
+    <section>
+      <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
+        Sample Test Case <%= testcase.id %>
+      </h4>
+
+      <% if (testcase.message.trim() != "Success") { %>
+      <p>Compiler Message</p>
+      <code> <%= testcase.message %> </code>
+      <% } %>
+
+      <!-- prettier-ignore -->
+      <% if (testcase.stderr.trim().length) { %>
+      <p>Error (stderr)</p>
+      <code> <%- testcase.stderr.replaceAll("\n", "<br />"); %> </code>
+      <% } %>
+
+      <!-- prettier-ignore -->
+      <% if (testcase.stdin.trim().length) { %>
+      <p>Input (stdin)</p>
+      <code> <%- testcase.stdin.replaceAll("\n", "<br />"); %> </code>
+      <% } %>
+
+      <p>Your Output (stdout)</p>
+      <code> <%- testcase.stdout.replaceAll("\n", "<br />"); %> </code>
+
+      <p>Expected Output</p>
+      <code> <%- testcase.expectedOutput.replaceAll("\n", "<br />"); %> </code>
+    </section>
+    <% } %>
+  </body>
+</html>

@@ -21,8 +21,9 @@ interface IRunResult {
   stdin: string;
   stdout: string;
   stderr: string;
-  testcaseMessage: string;
-  testcaseStatus: number;
+  message: string;
+  expectedOutput: string;
+  status: number;
   time: number;
 }
 
@@ -232,6 +233,8 @@ export default class Challenge {
 
     if (!solution) return;
 
+    vscode.window.showInformationMessage("Hang in there! Running testcases.");
+
     const initiateCodeRunResponse = await Hackerrank.initiateCodeRun(
       challenge.data.slug,
       solution
@@ -252,12 +255,6 @@ export default class Challenge {
      */
     let apiPoller = setTimeout(async function getSubmissionStatus() {
       console.log(tries);
-      if (tries === 0) {
-        vscode.window.showInformationMessage(
-          "Hang in there! Running testcases."
-        );
-      }
-
       let codeRunStatusResponse;
       try {
         codeRunStatusResponse = await Hackerrank.getCodeRunStatus(
@@ -295,6 +292,7 @@ export default class Challenge {
   }
 
   static async openTestcasesView(submissionData: any) {
+    let html;
     const testcasesPane = vscode.window.createWebviewPanel(
       "Testcases",
       "Testcases",
@@ -310,40 +308,37 @@ export default class Challenge {
     // True when tere are no compilation errors
     if (submissionData.compilemessage.length === 0) {
       const testcaseResults: IRunResult[] = [];
+      let status = 0;
       const numberOfTestcases: number = submissionData.expected_output.length;
       for (let i = 0; i < numberOfTestcases; i++) {
+        if (submissionData.testcase_status[i]) {
+          status = 1;
+        }
         testcaseResults.push({
           id: i + 1,
           stdin: submissionData.stdin[i],
           stdout: submissionData.stdout[i],
           stderr: submissionData.stderr[i],
-          testcaseMessage: submissionData.testcase_message[i],
-          testcaseStatus: submissionData.testcase_status[i],
+          message: submissionData.testcase_message[i],
+          expectedOutput: submissionData.expected_output[i],
+          status: submissionData.testcase_status[i],
           time: submissionData.time[i],
         });
       }
 
-      console.log(testcaseResults);
-      // Send object to ejs template and render the html on the webview
+      const templateData = { status, testcaseResults };
+
+      html = await ejs.renderFile(
+        "src/templates/wrong-success.ejs",
+        templateData
+      );
     } else {
       const compileMessage = submissionData.compilemessage;
 
-      console.log(compileMessage);
-      // Send error message to webview
+      html = await ejs.renderFile("src/templates/compilation.ejs", {
+        compileMessage,
+      });
     }
-
-    const html = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  ${JSON.stringify(submissionData, null, 3)}
-</body>
-</html>`;
 
     console.log(submissionData);
     testcasesPane.webview.html = html;
