@@ -16,6 +16,16 @@ interface IChallengeEditor {
   testcasesPane?: vscode.WebviewPanel;
 }
 
+interface IRunResult {
+  id: number;
+  stdin: string;
+  stdout: string;
+  stderr: string;
+  testcaseMessage: string;
+  testcaseStatus: number;
+  time: number;
+}
+
 export default class Challenge {
   static challenges: Record<string, IChallengeEditor> = {};
 
@@ -286,7 +296,7 @@ export default class Challenge {
 
   static async openTestcasesView(submissionData: any) {
     const testcasesPane = vscode.window.createWebviewPanel(
-      "Ori bori",
+      "Testcases",
       "Testcases",
       {
         preserveFocus: true,
@@ -296,6 +306,31 @@ export default class Challenge {
         enableScripts: true,
       }
     );
+
+    // True when tere are no compilation errors
+    if (submissionData.compilemessage.length === 0) {
+      const testcaseResults: IRunResult[] = [];
+      const numberOfTestcases: number = submissionData.expected_output.length;
+      for (let i = 0; i < numberOfTestcases; i++) {
+        testcaseResults.push({
+          id: i + 1,
+          stdin: submissionData.stdin[i],
+          stdout: submissionData.stdout[i],
+          stderr: submissionData.stderr[i],
+          testcaseMessage: submissionData.testcase_message[i],
+          testcaseStatus: submissionData.testcase_status[i],
+          time: submissionData.time[i],
+        });
+      }
+
+      console.log(testcaseResults);
+      // Send object to ejs template and render the html on the webview
+    } else {
+      const compileMessage = submissionData.compilemessage;
+
+      console.log(compileMessage);
+      // Send error message to webview
+    }
 
     const html = `
 <!DOCTYPE html>
@@ -310,6 +345,7 @@ export default class Challenge {
 </body>
 </html>`;
 
+    console.log(submissionData);
     testcasesPane.webview.html = html;
     return testcasesPane;
   }
