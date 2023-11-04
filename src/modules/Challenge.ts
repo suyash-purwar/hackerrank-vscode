@@ -28,6 +28,22 @@ interface IRunResult {
   time: number;
 }
 
+interface ISubmissionResult {
+  challengeId: number;
+  unlockedTestcases?: number[];
+  status: string;
+  testcases: {
+    id: number;
+    testcaseMessage: string;
+    testcaseStatus: number;
+    stdin?: string;
+    expectedOutput?: string;
+    stderr?: string;
+    time: number;
+    isUnlocked: boolean;
+  }[];
+}
+
 export default class Challenge {
   static challenges: Record<string, IChallengeEditor> = {};
 
@@ -255,15 +271,42 @@ export default class Challenge {
       action
     );
 
-    console.log(executionResult);
-
-    if (executionResult.status) {
-      console.log(executionResult.data);
+    if (action === "run" && executionResult.status) {
+      this.openRunTestcasesView(challenge, executionResult.data);
+    } else if (action === "submit" && executionResult.status) {
+      // Call to hackerrank api
+      const unlockedTestcases = await Hackerrank.getUnlockedTestcases(
+        challenge.data.id
+      );
+      let testcasesData: any = {};
+      if (unlockedTestcases) {
+        for (let testcaseId of unlockedTestcases) {
+          const testcase = await Hackerrank.getTestcaseData(
+            challenge.data.id,
+            testcaseId
+          );
+          if (testcase) {
+            testcasesData[testcaseId] = testcase;
+          }
+        }
+      }
+      console.log(testcasesData);
+      this.openSubmitTestcasesView(
+        challenge,
+        executionResult.data,
+        testcasesData
+      );
     }
   }
 
-  static async openTestcasesView(submissionData: any) {
+  static async openRunTestcasesView(
+    challenge: IChallengeEditor,
+    submissionData: any
+  ) {
     let html;
+
+    challenge.testcasesPane?.dispose();
+
     const testcasesPane = vscode.window.createWebviewPanel(
       "Testcases",
       "Testcases",
@@ -311,8 +354,55 @@ export default class Challenge {
       });
     }
 
-    console.log(submissionData);
     testcasesPane.webview.html = html;
+
+    challenge.testcasesPane = testcasesPane;
+
     return testcasesPane;
+  }
+
+  static async openSubmitTestcasesView(
+    challenge: IChallengeEditor,
+    submissionData: any,
+    testcasesData: any
+  ) {
+    const submissionResult: ISubmissionResult = {
+      challengeId: submissionData.challenge_id,
+      status: submissionData.status,
+      testcases: [],
+    };
+    const numberOfTestcases = submissionData.testcase_message.length;
+
+    for (let i = 0; i < numberOfTestcases; i++) {
+      submissionResult.testcases.push({
+        id: i + 1,
+        testcaseMessage: submissionData.testcase_message[i],
+        testcaseStatus: submissionData.testcase_status[i],
+        time: submissionData.codechecker_time[i],
+        stdin: testcasesData[i]?.stdin,
+        expectedOutput: testcasesData[i]?.expected_output,
+        stderr: testcasesData[i]?.stderr,
+        isUnlocked: Boolean(testcasesData[i]),
+      });
+    }
+
+    console.log(submissionResult);
+
+    const testcasesPane = vscode.window.createWebviewPanel(
+      "Testcases",
+      "Testcases",
+      {
+        preserveFocus: true,
+        viewColumn: vscode.ViewColumn.Three,
+      },
+      {
+        enableScripts: true,
+      }
+    );
+
+    testcasesPane.webview.html = JSON.stringify(submissionData);
+
+    challenge.testcasesPane?.dispose();
+    challenge.testcasesPane = testcasesPane;
   }
 }

@@ -12,7 +12,7 @@ const apiPoller = async (
   fn: Function,
   ...args: any
 ): Promise<{ status: boolean; data: any }> => {
-  let executionStatus = 0;
+  let executionStatus: number | string;
   const seed = 500;
   const incrementByMultipleOf = 200;
   let tries = 0;
@@ -24,7 +24,6 @@ const apiPoller = async (
     };
 
     let poller = setTimeout(async function getSubmissionStatus() {
-      console.log(tries);
       let codeExecutionResponse;
 
       try {
@@ -39,9 +38,15 @@ const apiPoller = async (
       }
 
       executionStatus = codeExecutionResponse.model.status;
+      console.log(executionStatus);
       tries++;
 
-      if (executionStatus) {
+      // executionStatus is of type number for code run endpoint
+      if (
+        (typeof executionStatus === "number" && executionStatus === 1) ||
+        (typeof executionStatus === "string" &&
+          executionStatus !== "Processing")
+      ) {
         vscode.window.showInformationMessage("Executed your code");
         console.log(tries, executionStatus, codeExecutionResponse);
         response = {

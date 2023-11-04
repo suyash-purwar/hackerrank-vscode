@@ -231,6 +231,42 @@ export default class Hackerrank {
 
     return responseData;
   }
-  static initiateCodeSubmission(challengeSlug: string, solution: ISolution) {}
-  static getCodeSubmissionStatus(id: number) {}
+
+  static async getUnlockedTestcases(challengeId: number) {
+    const url = `${this.BASE_URI}/contests/master/testcases/${challengeId}/all/unlocked_testcases`;
+    // @ts-ignore
+    const headers = new Headers({
+      Cookie: process.env.HACKERRANK_COOKIE,
+      "X-Csrf-Token": process.env.CSRF_TOKEN,
+      "Content-Type": "application/json",
+    });
+    const requestOptions = {
+      method: "GET",
+      headers,
+    };
+    // @ts-ignore
+    const response = await fetch(url, requestOptions);
+    const responsedData = await response.json();
+
+    return responsedData;
+  }
+
+  static async getTestcaseData(challengeId: number, testcaseId: number) {
+    const url = `${this.BASE_URI}/contests/master/testcases/${challengeId}/${testcaseId}/testcase_data`;
+    // @ts-ignore
+    const headers = new Headers({
+      Cookie: process.env.HACKERRANK_COOKIE,
+      "X-Csrf-Token": process.env.CSRF_TOKEN,
+      "Content-Type": "application/json",
+    });
+    const requestOptions = {
+      method: "GET",
+      headers,
+    };
+    // @ts-ignore
+    const response = await fetch(url, requestOptions);
+    const responseData = await response.json();
+
+    return responseData;
+  }
 }
