@@ -5,6 +5,7 @@ import Hackerrank from "./Hackerrank";
 import Language from "./Language";
 import Database from "./Database";
 import ISolution from "./interface/Solution";
+import apiPoller from "../utils/apiPoller";
 
 interface IChallengeEditor {
   webviewPanel: vscode.WebviewPanel;
@@ -82,8 +83,10 @@ export default class Challenge {
         await Challenge.openEditor(this.challenges[challengeSlug]);
         break;
       case "run":
-        await Challenge.runCode(this.challenges[challengeSlug]);
+        await Challenge.executeCode(this.challenges[challengeSlug], "run");
+        break;
       case "submit":
+        await Challenge.executeCode(this.challenges[challengeSlug], "submit");
         break;
     }
   }
@@ -228,67 +231,35 @@ export default class Challenge {
     }
   }
 
-  static async runCode(challenge: IChallengeEditor) {
+  static async executeCode(challenge: IChallengeEditor, action: string) {
     const solution = await this.getCodeFromEditor(challenge);
 
     if (!solution) return;
 
     vscode.window.showInformationMessage("Hang in there! Running testcases.");
 
-    const initiateCodeRunResponse = await Hackerrank.initiateCodeRun(
+    const response = await Hackerrank.initiateCodeExecution(
       challenge.data.slug,
-      solution
+      solution,
+      action
     );
 
-    const submissionId = initiateCodeRunResponse.model.id;
+    console.log(response);
 
-    let executionStatus = 0;
-    const seed = 500;
-    const incrementByMultipleOf = 200;
-    let tries = 0;
+    const submissionId = response.model.id;
 
-    /**
-     * Everytime executionStatus is 0, API call is made with an increasing delay (by a factor of 200) to not overwhelm the server.
-     * Using nested setTimeout instead of setInterval for greater control.
-     * Allows for strict delay between two api calls. Read reference.
-     * Reference: https://javascript.info/settimeout-setinterval#nested-settimeout
-     */
-    let apiPoller = setTimeout(async function getSubmissionStatus() {
-      console.log(tries);
-      let codeRunStatusResponse;
-      try {
-        codeRunStatusResponse = await Hackerrank.getCodeRunStatus(
-          challenge.data.slug,
-          submissionId
-        );
-      } catch (e) {
-        vscode.window.showErrorMessage(
-          "Failed to run your code. Make sure you are connected to internet."
-        );
-      }
+    const executionResult = await apiPoller(
+      Hackerrank.getCodeExecutionStatus,
+      challenge.data.slug,
+      submissionId,
+      action
+    );
 
-      executionStatus = codeRunStatusResponse.model.status;
-      tries++;
+    console.log(executionResult);
 
-      if (executionStatus) {
-        vscode.window.showInformationMessage("Executed your code");
-        console.log(tries, executionStatus, codeRunStatusResponse);
-        challenge.testcasesPane?.dispose();
-        challenge.testcasesPane = await Challenge.openTestcasesView(
-          codeRunStatusResponse.model
-        );
-      } else if (tries >= 5) {
-        vscode.window.showErrorMessage(
-          "It is taking unusually long time to run you code. Check again after some time"
-        );
-      } else {
-        console.log(seed + incrementByMultipleOf * tries);
-        apiPoller = setTimeout(
-          getSubmissionStatus,
-          seed + incrementByMultipleOf * tries
-        );
-      }
-    }, seed);
+    if (executionResult.status) {
+      console.log(executionResult.data);
+    }
   }
 
   static async openTestcasesView(submissionData: any) {

@@ -177,8 +177,13 @@ export default class Hackerrank {
     return challenge;
   }
 
-  static async initiateCodeRun(challengeSlug: string, solution: ISolution) {
-    const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/compile_tests`;
+  static async initiateCodeExecution(
+    challengeSlug: string,
+    solution: ISolution,
+    action: string
+  ) {
+    const endpoint = action === "run" ? "compile_tests" : "submissions";
+    const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/${endpoint}`;
     // @ts-ignore
     const headers = new Headers({
       Cookie: process.env.HACKERRANK_COOKIE,
@@ -203,8 +208,13 @@ export default class Hackerrank {
     return responseData;
   }
 
-  static async getCodeRunStatus(challengeSlug: string, submissionId: number) {
-    const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/compile_tests/${submissionId}`;
+  static async getCodeExecutionStatus(
+    challengeSlug: string,
+    submissionId: number,
+    action: string
+  ) {
+    const endpoint = action === "run" ? "compile_tests" : "submissions";
+    const url = `${this.BASE_URI}/contests/master/challenges/${challengeSlug}/${endpoint}/${submissionId}`;
     // @ts-ignore
     const headers = new Headers({
       Cookie: process.env.HACKERRANK_COOKIE,
