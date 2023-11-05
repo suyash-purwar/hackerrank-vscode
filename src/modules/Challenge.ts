@@ -388,7 +388,7 @@ export default class Challenge {
         challengeId: submissionData.challenge_id,
         challengeSlug: submissionData.challenge_slug,
         submissionId: submissionData.id,
-        status: submissionData.status === "Success" ? 1 : 0,
+        status: submissionData.status === "Accepted" ? 1 : 0,
         testcaseResults: [],
       };
       const numberOfTestcases = submissionData.testcase_message.length;
