@@ -329,7 +329,7 @@ export default class Challenge {
           status = 1;
         }
         testcaseResults.push({
-          id: i + 1,
+          id: i,
           stdin: submissionData.stdin[i],
           stdout: submissionData.stdout[i],
           stderr: submissionData.stderr[i],
@@ -377,6 +377,10 @@ export default class Challenge {
       }
     );
 
+    testcasesPane.webview.onDidReceiveMessage(async (message) =>
+      this.unlockTestcase(message)
+    );
+
     if (submissionData.compile_message.length === 0) {
       const submissionResult: ISubmissionResult = {
         challengeId: submissionData.challenge_id,
@@ -387,7 +391,7 @@ export default class Challenge {
 
       for (let i = 0; i < numberOfTestcases; i++) {
         submissionResult.testcaseResults.push({
-          id: i + 1,
+          id: i,
           message: submissionData.testcase_message[i],
           status: submissionData.testcase_status[i],
           time: submissionData.codechecker_time[i],
@@ -416,5 +420,13 @@ export default class Challenge {
 
     challenge.testcasesPane?.dispose();
     challenge.testcasesPane = testcasesPane;
+  }
+
+  static async unlockTestcase(message: {
+    challengeId: number;
+    testcaseId: number;
+  }) {
+    vscode.window.showInformationMessage("Getting testcases! Hang in there.");
+    console.log(message);
   }
 }

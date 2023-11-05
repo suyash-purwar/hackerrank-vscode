@@ -87,7 +87,6 @@
       const vscode = acquireVsCodeApi();
 
       function solve() {
-        console.log("hey");
         vscode.postMessage({
           event: "solve",
           challengeSlug: "<%= slug %>",
@@ -95,7 +94,6 @@
       }
 
       function execute(type) {
-        console.log("I am mada");
         vscode.postMessage({
           event: type,
           challengeSlug: "<%= slug %>",

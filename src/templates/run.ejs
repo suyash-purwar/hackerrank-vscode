@@ -69,7 +69,7 @@
     <% for (let testcase of testcaseResults) { %>
     <section>
       <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
-        Sample Test Case <%= testcase.id %>
+        Sample Test Case <%= testcase.id+1 %>
       </h4>
 
       <% if (testcase.message.trim() != "Success") { %>

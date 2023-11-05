@@ -100,6 +100,14 @@
         cursor: pointer;
         text-decoration: underline;
       }
+
+      .visible {
+        display: block;
+      }
+
+      .none {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -107,36 +115,40 @@
     <p><%= subheading %></p>
 
     <% for (let testcase of testcaseResults) { %>
-    <section>
+    <section id="<%= testcase.id %>">
       <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
-        Sample Test Case <%= testcase.id %>
+        Sample Test Case <%= testcase.id+1 %>
       </h4>
 
       <p>Compiler Message</p>
       <code> <%= testcase.message %> </code>
 
-      <% if (testcase.isUnlocked) { %>
+      <div class="testcase-data <%= testcase.isUnlocked ? 'visible' : 'none' %>">
         <p>Input (stdin)</p>
-        <code> <%- testcase.stdin.replaceAll("\n", "<br />"); %> </code>  
+        <code> <%- testcase.stdin?.replaceAll("\n", "<br />"); %> </code>  
         <p>Expected Output</p>
-        <code> <%- testcase.expectedOutput.replaceAll("\n", "<br />"); %> </code>
-      <% } else { %>
-        <div class="locked-testcase">
-          <div class="locked-testcase-heading">
-            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
-              <path style="fill: white" d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
-            </svg>
-            <h4>Hidden Test Case</h4>
-          </div>
-          <h6>Unlock this testcase for 5 hackos.</h6>
-          <button class="load-testcase-btn" id="<%= testcase.id %>" onClick="sayId('<%= testcase.id %>')">Unlock</button>
+        <code> <%- testcase.expectedOutput?.replaceAll("\n", "<br />"); %> </code>
+      </div>
+
+      <div class="locked-testcase  <%= !testcase.isUnlocked ? 'visible' : 'none' %>">
+        <div class="locked-testcase-heading">
+          <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+            <path style="fill: white" d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
+          </svg>
+          <h4>Hidden Test Case</h4>
         </div>
-      <% } %>
+        <h6>Unlock this testcase for 5 hackos</h6>
+        <button class="load-testcase-btn" onClick="sayId('<%= testcase.id %>')">Unlock</button>
+      </div>
     </section>
     <% } %>
     <script>
+      const vscode = acquireVsCodeApi();
       function sayId(id) {
-        console.log(id)
+        vscode.postMessage({
+          challengeId: "<%= challengeId %>",
+          testcaseId: id
+        });
       }      
     </script>
   </body>
