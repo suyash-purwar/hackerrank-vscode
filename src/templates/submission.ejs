@@ -115,7 +115,7 @@
     <p><%= subheading %></p>
 
     <% for (let testcase of testcaseResults) { %>
-    <section id="<%= testcase.id %>">
+    <section id="testcase-<%= testcase.id %>">
       <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
         Sample Test Case <%= testcase.id+1 %>
       </h4>
@@ -125,9 +125,9 @@
 
       <div class="testcase-data <%= testcase.isUnlocked ? 'visible' : 'none' %>">
         <p>Input (stdin)</p>
-        <code> <%- testcase.stdin?.replaceAll("\n", "<br />"); %> </code>  
+        <code id="testcase-stdin"> <%- testcase.stdin?.replaceAll("\n", "<br />"); %> </code>  
         <p>Expected Output</p>
-        <code> <%- testcase.expectedOutput?.replaceAll("\n", "<br />"); %> </code>
+        <code id="testcase-expected-output"> <%- testcase.expectedOutput?.replaceAll("\n", "<br />"); %> </code>
       </div>
 
       <div class="locked-testcase  <%= !testcase.isUnlocked ? 'visible' : 'none' %>">
@@ -147,9 +147,21 @@
       function sayId(id) {
         vscode.postMessage({
           challengeId: "<%= challengeId %>",
-          testcaseId: id
+          challengeSlug: "<%= challengeSlug %>",
+          testcaseId: id,
+          submissionId: "<%= submissionId %>",
         });
-      }      
+      }
+
+      window.addEventListener('message', (event) => {
+        const { testcaseId, stdin, expected_output } = event.data;
+        
+        document.querySelector(`#testcase-${testcaseId} #testcase-stdin`).textContent = stdin;
+        document.querySelector(`#testcase-${testcaseId} #testcase-expected-output`).textContent = expected_output;
+
+        document.querySelector(`#testcase-${testcaseId} .testcase-data`).style.display = "block";
+        document.querySelector(`#testcase-${testcaseId} .locked-testcase`).style.display = "none";
+      });
     </script>
   </body>
 </html>

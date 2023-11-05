@@ -67,7 +67,7 @@
     <p><%= subheading %></p>
 
     <% for (let testcase of testcaseResults) { %>
-    <section>
+    <section id="testcase-<%= testcase.id %>">
       <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
         Sample Test Case <%= testcase.id+1 %>
       </h4>

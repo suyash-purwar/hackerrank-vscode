@@ -30,6 +30,8 @@ interface IRunResult {
 
 interface ISubmissionResult {
   challengeId: number;
+  submissionId: number;
+  challengeSlug: string;
   unlockedTestcases?: number[];
   status: number;
   testcaseResults: {
@@ -384,6 +386,8 @@ export default class Challenge {
     if (submissionData.compile_message.length === 0) {
       const submissionResult: ISubmissionResult = {
         challengeId: submissionData.challenge_id,
+        challengeSlug: submissionData.challenge_slug,
+        submissionId: submissionData.id,
         status: submissionData.status === "Success" ? 1 : 0,
         testcaseResults: [],
       };
@@ -424,9 +428,25 @@ export default class Challenge {
 
   static async unlockTestcase(message: {
     challengeId: number;
+    challengeSlug: string;
+    submissionId: number;
     testcaseId: number;
   }) {
+    const { challengeId, challengeSlug, submissionId, testcaseId } = message;
     vscode.window.showInformationMessage("Getting testcases! Hang in there.");
-    console.log(message);
+    const purchaseResponse = await Hackerrank.purchaseTestcase(
+      challengeId,
+      submissionId,
+      testcaseId
+    );
+    const testcaseResponse = await Hackerrank.getTestcaseData(
+      challengeId,
+      testcaseId
+    );
+
+    this.challenges[challengeSlug].testcasesPane?.webview.postMessage({
+      testcaseId,
+      ...testcaseResponse,
+    });
   }
 }
