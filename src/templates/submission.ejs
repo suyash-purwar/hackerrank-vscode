@@ -1,0 +1,143 @@
+<!-- prettier-ignore -->
+<% let heading, subheading %>
+<% if (status) { %>
+  <% heading = "Congratulations! :)" %>
+  <% subheading = "You have passed the sample testcases. Click the submit button to run your code against all the code test cases."; %>
+<% } else { %>
+  <% let noOfTestcases = testcaseResults.length; %>
+  <% let noOfTestcasesFailing = 0 %>
+  <% testcaseResults.forEach(t => { %>
+    <% noOfTestcasesFailing += !t.status %>
+  <% }); %>
+  <% heading = `${noOfTestcasesFailing}/${noOfTestcases} test cases failed :(` %>
+  <% subheading = "Uh-oh! Think, write some more code and try again"; %>
+<% } %>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testcase Results</title>
+    <style>
+      p {
+        font-size: 15px;
+      }
+
+      h2 {
+        font-size: 30px;
+        line-height: 1;
+        margin: 20px 0;
+      }
+
+      .success {
+        color: #00ea64;
+      }
+
+      section {
+        margin-top: 40px;
+        border: 1px solid grey;
+        border-radius: 5px;
+        padding: 20px 10px;
+      }
+
+      section p {
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      h4 {
+        font-size: 20px;
+        margin: 0;
+        display: inline-block;
+      }
+
+      .fail {
+        color: #d11534;
+      }
+
+      code {
+        display: block;
+        padding: 10px 13px;
+        border-radius: 5px;
+        background-color: rgb(31, 31, 31);
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .locked-testcase {
+        padding: 30px 0 15px 0;
+        text-align: center;
+      }
+
+      .locked-testcase h6 {
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1;
+        margin: 20px 0;
+      }
+
+      .locked-testcase-heading svg {
+        display: inline-block;
+        margin-right: 5px;
+        font-size: 23px;
+      }
+
+      .locked-testcase-heading h4 {
+        color: white;
+        display: inline-block;
+        font-size: 23px;
+      }
+
+      .load-testcase-btn {
+        text-align: center;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 class="<%= status ? 'success' : 'fail' %>"><%= heading %></h2>
+    <p><%= subheading %></p>
+
+    <% for (let testcase of testcaseResults) { %>
+    <section>
+      <h4 class="<%= testcase.status ? 'success' : 'fail' %>">
+        Sample Test Case <%= testcase.id %>
+      </h4>
+
+      <p>Compiler Message</p>
+      <code> <%= testcase.message %> </code>
+
+      <% if (testcase.isUnlocked) { %>
+        <p>Input (stdin)</p>
+        <code> <%- testcase.stdin.replaceAll("\n", "<br />"); %> </code>  
+        <p>Expected Output</p>
+        <code> <%- testcase.expectedOutput.replaceAll("\n", "<br />"); %> </code>
+      <% } else { %>
+        <div class="locked-testcase">
+          <div class="locked-testcase-heading">
+            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512">
+              <path style="fill: white" d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/>
+            </svg>
+            <h4>Hidden Test Case</h4>
+          </div>
+          <h6>Unlock this testcase for 5 hackos.</h6>
+          <button class="load-testcase-btn" id="<%= testcase.id %>" onClick="sayId('<%= testcase.id %>')">Unlock</button>
+        </div>
+      <% } %>
+    </section>
+    <% } %>
+    <script>
+      function sayId(id) {
+        console.log(id)
+      }      
+    </script>
+  </body>
+</html>

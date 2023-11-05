@@ -31,11 +31,11 @@ interface IRunResult {
 interface ISubmissionResult {
   challengeId: number;
   unlockedTestcases?: number[];
-  status: string;
-  testcases: {
+  status: number;
+  testcaseResults: {
     id: number;
-    testcaseMessage: string;
-    testcaseStatus: number;
+    message: string;
+    status: number;
     stdin?: string;
     expectedOutput?: string;
     stderr?: string;
@@ -342,10 +342,7 @@ export default class Challenge {
 
       const templateData = { status, testcaseResults };
 
-      html = await ejs.renderFile(
-        "src/templates/wrong-success.ejs",
-        templateData
-      );
+      html = await ejs.renderFile("src/templates/run.ejs", templateData);
     } else {
       const compileMessage = submissionData.compilemessage;
 
@@ -366,27 +363,7 @@ export default class Challenge {
     submissionData: any,
     testcasesData: any
   ) {
-    const submissionResult: ISubmissionResult = {
-      challengeId: submissionData.challenge_id,
-      status: submissionData.status,
-      testcases: [],
-    };
-    const numberOfTestcases = submissionData.testcase_message.length;
-
-    for (let i = 0; i < numberOfTestcases; i++) {
-      submissionResult.testcases.push({
-        id: i + 1,
-        testcaseMessage: submissionData.testcase_message[i],
-        testcaseStatus: submissionData.testcase_status[i],
-        time: submissionData.codechecker_time[i],
-        stdin: testcasesData[i]?.stdin,
-        expectedOutput: testcasesData[i]?.expected_output,
-        stderr: testcasesData[i]?.stderr,
-        isUnlocked: Boolean(testcasesData[i]),
-      });
-    }
-
-    console.log(submissionResult);
+    let html;
 
     const testcasesPane = vscode.window.createWebviewPanel(
       "Testcases",
@@ -400,7 +377,42 @@ export default class Challenge {
       }
     );
 
-    testcasesPane.webview.html = JSON.stringify(submissionData);
+    if (submissionData.compile_message.length === 0) {
+      const submissionResult: ISubmissionResult = {
+        challengeId: submissionData.challenge_id,
+        status: submissionData.status === "Success" ? 1 : 0,
+        testcaseResults: [],
+      };
+      const numberOfTestcases = submissionData.testcase_message.length;
+
+      for (let i = 0; i < numberOfTestcases; i++) {
+        submissionResult.testcaseResults.push({
+          id: i + 1,
+          message: submissionData.testcase_message[i],
+          status: submissionData.testcase_status[i],
+          time: submissionData.codechecker_time[i],
+          stdin: testcasesData[i]?.stdin,
+          expectedOutput: testcasesData[i]?.expected_output,
+          stderr: testcasesData[i]?.stderr,
+          isUnlocked: Boolean(testcasesData[i]),
+        });
+      }
+
+      console.log(submissionResult);
+
+      html = await ejs.renderFile(
+        "src/templates/submission.ejs",
+        submissionResult
+      );
+    } else {
+      const compileMessage = submissionData.compile_message;
+
+      html = await ejs.renderFile("src/templates/compilation.ejs", {
+        compileMessage,
+      });
+    }
+
+    testcasesPane.webview.html = html;
 
     challenge.testcasesPane?.dispose();
     challenge.testcasesPane = testcasesPane;
