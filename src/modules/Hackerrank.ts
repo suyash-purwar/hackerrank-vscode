@@ -99,18 +99,14 @@ export default class Hackerrank {
     return tracks;
   }
 
-  static async getTracksChallenges(trackSlug: string, offset = 0, limit = 10) {
-    let isExhausted = false;
-    const url = `${this.BASE_URI}/contests/master/tracks/${trackSlug}/challenges?offset=${offset}&limit=${limit}`;
+  static async getTracksChallenges(trackSlug: string) {
+    const url = `${this.BASE_URI}/contests/master/tracks/${trackSlug}/challenges?offset=0&limit=200`;
 
     // @ts-ignore
     const response = await fetch(url, {
       method: "GET",
     });
     const responseData = (await response.json()) as any;
-
-    const challengesCount = responseData.total;
-    if (challengesCount <= offset + limit) isExhausted = true;
 
     // TODO: Remove unnecessary fields
     const trackChallenges: ITrackChallenges[] = responseData.models.map(
@@ -125,10 +121,7 @@ export default class Hackerrank {
       }
     );
 
-    return {
-      isExhausted,
-      challenges: trackChallenges,
-    };
+    return trackChallenges;
   }
 
   static async getChallenge(challengeSlug: string) {

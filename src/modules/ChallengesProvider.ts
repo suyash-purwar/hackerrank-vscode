@@ -2,6 +2,16 @@ import * as vscode from "vscode";
 import Challenge from "./Challenge";
 import Hackerrank from "./Hackerrank";
 
+class LoadMoreItem extends vscode.TreeItem {
+  readonly type: string = "load-more";
+  slug: string;
+
+  constructor(slug: string) {
+    super("Load More Challenges");
+    this.slug = slug;
+  }
+}
+
 class TrackTreeItem extends vscode.TreeItem {
   slug: string;
   readonly type: string = "track";
@@ -38,7 +48,6 @@ export default class ChallengeProvider
     const challengesTreeView = vscode.window.createTreeView("challenges", {
       treeDataProvider: new ChallengeProvider(),
     });
-
     challengesTreeView.onDidChangeSelection(this.getChallenge);
   }
 
@@ -68,12 +77,13 @@ export default class ChallengeProvider
 
       if (!trackChallenges) return;
 
-      const trackChallengesTreeItems = trackChallenges.challenges.map((tc) => {
+      const trackChallengesTreeItems = trackChallenges.map((tc) => {
         return new TrackChallengeTreeItem(tc.id, tc.slug, tc.name, trackSlug);
       });
 
       return trackChallengesTreeItems;
     } catch (e) {
+      console.log(e);
       vscode.window.showErrorMessage(
         "Failed to load challeges. Make sure you are connected to internet."
       );
@@ -93,6 +103,7 @@ export default class ChallengeProvider
         );
       }
     } catch (e) {
+      console.log(e);
       vscode.window.showErrorMessage(
         "Failed to load this challenge. Make sure you are connected to internet."
       );
