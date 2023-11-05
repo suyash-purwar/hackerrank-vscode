@@ -36,7 +36,9 @@ Hackerrank does not come with debugging tools and neither has direct integration
 
 <br>
 
-<img src="./media/main.gif" width="100%">
+<video width="100%" autoplay loop controls>
+   <source src="./media/main.mp4">
+</video>
 
 ## 2. Install
 
