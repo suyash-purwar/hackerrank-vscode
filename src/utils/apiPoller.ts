@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import Hackerrank from "../modules/Hackerrank";
 
 /**
- * Everytime executionStatus is 0, API call is made with an increasing delay (by a factor of 200) to not overwhelm the server.
+ * Everytime executionStatus is 1 or executionStatus != "Processing",
+ * API call is made with an increasing delay (by a factor of 200) to not overwhelm the server.
  * Using nested setTimeout instead of setInterval for greater control.
  * Allows for strict delay between two api calls. Read reference.
  * Reference: https://javascript.info/settimeout-setinterval#nested-settimeout
@@ -41,7 +42,6 @@ const apiPoller = async (
       console.log(executionStatus);
       tries++;
 
-      // executionStatus is of type number for code run endpoint
       if (
         (typeof executionStatus === "number" && executionStatus === 1) ||
         (typeof executionStatus === "string" &&

@@ -93,7 +93,7 @@ export default class Database {
       await fs.access(url, fs.constants.F_OK);
       return url;
     } catch (e) {
-      // console.log(e);
+      console.log(e);
     }
   }
 }

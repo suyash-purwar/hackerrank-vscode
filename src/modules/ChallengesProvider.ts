@@ -2,16 +2,6 @@ import * as vscode from "vscode";
 import Challenge from "./Challenge";
 import Hackerrank from "./Hackerrank";
 
-class LoadMoreItem extends vscode.TreeItem {
-  readonly type: string = "load-more";
-  slug: string;
-
-  constructor(slug: string) {
-    super("Load More Challenges");
-    this.slug = slug;
-  }
-}
-
 class TrackTreeItem extends vscode.TreeItem {
   slug: string;
   readonly type: string = "track";

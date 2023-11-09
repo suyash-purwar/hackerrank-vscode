@@ -276,7 +276,6 @@ export default class Challenge {
     if (action === "run" && executionResult.status) {
       this.openRunTestcasesView(challenge, executionResult.data);
     } else if (action === "submit" && executionResult.status) {
-      // Call to hackerrank api
       const unlockedTestcases = await Hackerrank.getUnlockedTestcases(
         challenge.data.id
       );

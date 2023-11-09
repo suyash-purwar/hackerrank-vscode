@@ -34,6 +34,8 @@ This project was an attempt to bring Hackerrrank into our good old VS Code as an
 
 Hackerrank does not come with debugging tools and neither has direct integration with Github for version control. Snippet support is not very flexible. Most of the developers are much more adept at VS Code and would rather prefer coding here than on the hackerrank platform. This is where this extension comes in!
 
+> This extension wouldn't be published on VS Code until I get the consent from HackerRank.
+
 <br>
 
 <img src="./media/main.gif">
