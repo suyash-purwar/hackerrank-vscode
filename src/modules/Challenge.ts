@@ -71,8 +71,7 @@ export default class Challenge {
       data: challengeData,
     };
 
-    const challengeTemplatePath =
-      "/media/suyash/HDD/realwork/hackerrank-vscode/src/templates/challenge.ejs";
+    const challengeTemplatePath = "src/templates/challenge.ejs";
     const challengeHtml = await ejs.renderFile(
       challengeTemplatePath,
       challengeData
