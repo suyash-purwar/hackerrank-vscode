@@ -71,7 +71,7 @@ export default class Challenge {
       data: challengeData,
     };
 
-    const challengeTemplatePath = "src/templates/challenge.ejs";
+    const challengeTemplatePath = `${process.env.ROOT_DIR}/templates/challenge.ejs`;
     const challengeHtml = await ejs.renderFile(
       challengeTemplatePath,
       challengeData
@@ -342,13 +342,19 @@ export default class Challenge {
 
       const templateData = { status, testcaseResults };
 
-      html = await ejs.renderFile("src/templates/run.ejs", templateData);
+      html = await ejs.renderFile(
+        `${process.env.ROOT_DIR}/templates/run.ejs`,
+        templateData
+      );
     } else {
       const compileMessage = submissionData.compilemessage;
 
-      html = await ejs.renderFile("src/templates/compilation.ejs", {
-        compileMessage,
-      });
+      html = await ejs.renderFile(
+        `${process.env.ROOT_DIR}/templates/compilation.ejs`,
+        {
+          compileMessage,
+        }
+      );
     }
 
     testcasesPane.webview.html = html;
@@ -407,15 +413,18 @@ export default class Challenge {
       console.log(submissionResult);
 
       html = await ejs.renderFile(
-        "src/templates/submission.ejs",
+        `${process.env.ROOT_DIR}/templates/submission.ejs`,
         submissionResult
       );
     } else {
       const compileMessage = submissionData.compile_message;
 
-      html = await ejs.renderFile("src/templates/compilation.ejs", {
-        compileMessage,
-      });
+      html = await ejs.renderFile(
+        `${process.env.ROOT_DIR}/templates/compilation.ejs`,
+        {
+          compileMessage,
+        }
+      );
     }
 
     testcasesPane.webview.html = html;

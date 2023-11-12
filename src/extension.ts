@@ -4,6 +4,7 @@ import Authenticate from "./modules/Authentication";
 import ChallengeProvider from "./modules/ChallengesProvider";
 
 export async function activate(context: vscode.ExtensionContext) {
+  process.env.ROOT_DIR = __dirname;
   // * Add subscriptions
   context.subscriptions.push(
     vscode.commands.registerCommand("hackerrank-vscode.helloWorld", () => {
