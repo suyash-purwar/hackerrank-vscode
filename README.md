@@ -34,7 +34,7 @@ This project was an attempt to bring Hackerrrank into our good old VS Code as an
 
 Hackerrank does not come with debugging tools and neither has direct integration with Github for version control. Snippet support is not very flexible. Most of the developers are much more adept at VS Code and would rather prefer coding here than on the hackerrank platform. This is where this extension comes in!
 
-> This extension wouldn't be published on VS Code until I get the consent from HackerRank.
+> This extension won't be published on VS Code until I get consent from HackerRank.
 
 <br>
 
@@ -48,13 +48,12 @@ Hackerrank does not come with debugging tools and neither has direct integration
 git clone https://github.com/Suyash-Purwar/hackerrank-vscode.git
 ```
 
-2. Move inside the folder and open VS Code
-
+2. Navigate to the project directory and run
 ```bash
-cd hackerrank-vscode && code .
+npm install
 ```
 
-3. Press 'F5' to start the debugger. A new VS Code window will open with the extension running.
+3. Open the project folder in VS Code and press `F5` to start the debugger. A new VS Code window will open with the extension activated.
 
 ## 3. Hackerrank provides an API for developers, right?
 
