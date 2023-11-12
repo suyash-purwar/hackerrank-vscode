@@ -51,7 +51,7 @@
     "clean": "rimraf out/",
     "vscode:prepublish": "npm run compile && npm run copy-assets",
     "compile": "tsc -p ./ && npm run copy-assets",
-    "watch": "npm run clean && npm run copy-assets && tsc -w -p ./",
+    "watch": "npm run copy-assets && tsc -w -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
