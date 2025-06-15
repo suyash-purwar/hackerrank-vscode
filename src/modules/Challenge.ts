@@ -71,6 +71,9 @@ export default class Challenge {
       data: challengeData,
     };
 
+    const timerHtml = await ejs.renderFile(`${process.env.ROOT_DIR}/templates/timer.ejs`);
+    challengeData.timerUI = timerHtml;
+
     const challengeTemplatePath = `${process.env.ROOT_DIR}/templates/challenge.ejs`;
     const challengeHtml = await ejs.renderFile(
       challengeTemplatePath,
@@ -104,6 +107,9 @@ export default class Challenge {
         break;
       case "submit":
         await Challenge.executeCode(this.challenges[challengeSlug], "submit");
+        break;
+      case "time_up":
+        vscode.window.showErrorMessage("🕓 Time's up!");
         break;
     }
   }
