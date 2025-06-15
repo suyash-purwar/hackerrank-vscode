@@ -59,6 +59,7 @@
         clear: both;
       }
       .solve {
+        float: left;
         background-color: #00ea64;
       }
       .run {
@@ -69,6 +70,7 @@
       .submit {
         float: right;
         background-color: #00ea64;
+        margin-right: 10px;
       }
     </style>
   </head>
@@ -80,7 +82,16 @@
         Submit
       </button>
       <button id="run" class="btn run" onclick="execute('run')">Run</button>
+      <button id="timer-icon" title="Timer">⏲</button>
+      
+      <div id="timer-bar">
+        <span id="pause-timer" title="Pause">❚❚</span>
+        <span id="timer-display">00:00:00</span>
+        <span id="reset-timer" title="Reset">↻</span>
+        <span id="collapse-timer" title="Hide">≫</span>
+      </div>
     </div>
+    <%- timerUI %>
     <%- questionHtml %>
     <script>
       let openCodeEditorsCount = 0;

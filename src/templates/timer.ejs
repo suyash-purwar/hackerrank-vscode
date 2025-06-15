@@ -1,0 +1,511 @@
+<style>
+    #timer-icon {
+      float: right;
+      background-color: #00ea64;
+      width: 48px;              
+      height: 37px;             
+      padding: 0;
+      font-size: 20px;
+      border-radius: 3px;
+      margin-right: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+    }
+  
+    #timer-popup {
+      position: relative;
+      float: right;
+      top: 10px;
+      right: 0px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      padding: 16px;
+      border-radius: 10px;
+      display: none;
+      color: white;
+      z-index: 99;
+      width: 240px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+    
+    #timer-popup button {
+      margin-top: 12px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      border: none;
+      background: #00ea64;
+      color: black;
+      cursor: pointer;
+    }
+    #timer-popup button:hover {
+      background-color: #00c857;
+    }
+  
+    .timer-container {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+    }
+  
+    #timer-bar {
+      float: right;
+      background: #333;
+      padding: 8px 15px;
+      border-radius: 20px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-right: 10px;
+      justify-content: center;
+    }
+    #timer-bar span {
+      cursor: pointer;
+      color: #00ea64;
+    }
+    #timer-bar title {
+      border-radius: 3px;
+      border: none;
+      color: #eee;
+    }
+  
+    #mode-stopwatch.active,
+    #mode-timer.active {
+      border: 2px solid #00ea64;
+      background: rgba(0, 234, 100, 0.2);
+      color: #00ea64;
+    }
+  
+    #timer-controls {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+  
+    .timer-input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+  
+    .timer-input-group input[type="number"] {
+      width: 48px;
+      padding: 6px;
+      border: 1px solid #555;
+      border-radius: 6px;
+      background-color: #2b2b2b;
+      color: #eee;
+      text-align: center;
+      font-size: 16px;
+    }
+    #timer-controls input[type="number"]:focus {
+      outline: none;
+      border: 2px solid #00ea64;
+      background-color: #2b2b2b;
+      color: #eee;
+    }
+  
+    /* HIDE NUMBER INPUT ARROWS */
+    #timer-controls input[type="number"]::-webkit-inner-spin-button,
+    #timer-controls input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  
+    .timer-input-group label {
+      font-size: 12px;
+      color: #ccc;
+      margin-top: 4px;
+    }
+  
+    .mode-toggle {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .mode-toggle button {
+      flex: 1;
+      padding: 8px;
+      margin: 0 5px;
+      background-color: #333;
+      border: 1px solid #555;
+      border-radius: 6px;
+      color: #ccc;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .mode-toggle button.active {
+      background-color: rgba(0, 234, 100, 0.2);
+      border: 2px solid #00ea64;
+      color: #00ea64;
+    }
+  
+    #start-timer:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: grey;
+    }
+  
+    input::placeholder {
+      color: #ccc;
+      font-size: 16px;
+      text-align: center;
+    }
+  
+    #start-timer.danger {
+      background-color: #ff4d4d !important;
+      color: white !important;
+    }
+  </style>
+  
+  <!-- HTML STRUCTURE -->
+  <div id="timer-popup">
+    <div class="mode-toggle">
+      <button id="mode-stopwatch" class="active">Stopwatch</button>
+      <button id="mode-timer">Timer</button>
+    </div>
+    <div id="timer-controls">
+      <div class="timer-input-group">
+        <input id="hours" type="number" min="0" max="10" placeholder="00" />
+        <label for="hours">hr</label>
+      </div>
+      <div class="timer-input-group">
+        <input id="minutes" type="number" min="0" max="59" placeholder="00" />
+        <label for="minutes">min</label>
+      </div>
+    </div>
+    <button id="start-timer">Start Stopwatch</button>
+  </div>
+  
+  <!-- JavaScript-->
+  <script>
+    // ================ INITIALIZATION ================
+    // DOM Elements
+    const timerControls = document.getElementById("timer-controls");
+    const modeStopwatchBtn = document.getElementById("mode-stopwatch");
+    const modeTimerBtn = document.getElementById("mode-timer");
+    const startBtn = document.getElementById("start-timer");
+    const hourInput = document.getElementById("hours");
+    const minuteInput = document.getElementById("minutes");
+  
+    // Timer State Variables
+    let mode = "stopwatch";
+    let timerInterval;
+    let elapsed = 0;
+    let countdown = 0;
+    let running = false;
+    let paused = false;
+  
+    // ================ FUNCTIONS ================
+    //Sets the current mode (stopwatch or timer)
+    function setMode(newMode) {
+      mode = newMode;
+  
+      if (mode === "stopwatch") {
+        timerControls.style.display = "none";
+        updateStartButtonText();
+        modeStopwatchBtn.classList.add("active");
+        modeTimerBtn.classList.remove("active");
+      } else {
+        timerControls.style.display = "flex";
+        updateStartButtonText();
+        modeTimerBtn.classList.add("active");
+        modeStopwatchBtn.classList.remove("active");
+        formatAndValidateInputs(); // Validate inputs when switching to timer mode
+      }
+    }
+  
+    //Handles mode switching between stopwatch and timer
+    function handleModeSwitch(newMode) {
+      if (mode === newMode) return; // No change needed if same mode
+      
+      if (running || paused) {
+        // Don't allow mode switching while timer is active
+        return;
+      }
+      
+      setMode(newMode);
+    }
+  
+    // ================ TIMER CONTROL FUNCTIONS ================
+    //Main start/stop/reset handler
+    function handleStart() {
+      if (running) {
+        stopTimer();
+        resetStartBtnUI();
+      } else if (paused) {
+        stopTimer();
+        resetStartBtnUI();
+      } else {
+        if (mode === "stopwatch") {
+          startStopwatch();
+        } else {
+          const hrs = parseInt(hourInput.value || "0", 10);
+          const mins = parseInt(minuteInput.value || "0", 10);
+          startCountdown(hrs * 3600 + mins * 60);
+        }
+      }
+    }
+  
+    //Starts the stopwatch functionality
+    function startStopwatch() {
+      document.getElementById("timer-bar").style.display = "flex";
+      document.getElementById("timer-icon").style.display = "none";
+      document.getElementById("timer-popup").style.display = "none";
+  
+      document.getElementById("pause-timer").innerText = "❚❚";
+      document.getElementById("pause-timer").title = "Pause";
+  
+      running = true;
+      paused = false;
+      elapsed = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        elapsed++;
+        updateDisplay(elapsed);
+      }, 1000);
+      updateStartButtonText();
+    }
+  
+    //Starts the countdown timer
+    function startCountdown(seconds) {
+      countdown = seconds;
+      document.getElementById("timer-bar").style.display = "flex";
+      document.getElementById("timer-icon").style.display = "none";
+      document.getElementById("timer-popup").style.display = "none";
+  
+      document.getElementById("pause-timer").innerText = "❚❚";
+      document.getElementById("pause-timer").title = "Pause";
+      
+      running = true;
+      paused = false;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        countdown--;
+        updateDisplay(countdown);
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          vscode.postMessage({ event: "time_up" });
+        }
+      }, 1000);
+      updateStartButtonText();
+    }
+  
+    //Stops the timer and resets all values
+    function stopTimer() {
+      clearInterval(timerInterval);
+      elapsed = 0;
+      countdown = 0;
+      updateDisplay(0);
+      running = false;
+      paused = false;
+    }
+  
+    // ================ UI UPDATE FUNCTIONS ================
+    //Updates the start button text based on current state
+    function updateStartButtonText() {
+      if (running) {
+        startBtn.innerText = mode === "stopwatch" ? "◼ Stop Stopwatch" : "◼ Stop Timer";
+      } else if (paused) {
+        startBtn.innerText = mode === "stopwatch" ? "↻ Reset Stopwatch" : "↻ Reset Timer";
+      } else {
+        startBtn.innerText = mode === "stopwatch" ? "Start Stopwatch" : "Start Timer";
+      }
+    }
+  
+    //Resets the start button to its default state
+    function resetStartBtnUI() {
+      startBtn.classList.remove("danger");
+      updateStartButtonText();
+      startBtn.onclick = handleStart;
+      if (mode === "timer") formatAndValidateInputs();
+    }
+  
+    //Updates the timer display
+    function updateDisplay(secs) {
+      const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+      const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+      const s = String(secs % 60).padStart(2, "0");
+      document.getElementById("timer-display").innerText = `${h}:${m}:${s}`;
+    }
+  
+    // ================ INPUT HANDLING FUNCTIONS ================
+    //Formats and validates the time inputs
+    function formatAndValidateInputs() {
+      let hrs = parseInt(hourInput.value || "0", 10);
+      let mins = parseInt(minuteInput.value || "0", 10);
+  
+      // Cap hours at 10
+      if (hrs > 10) hrs = 10;
+  
+      // Handle minutes overflow
+      if (mins >= 60) {
+        hrs += Math.floor(mins / 60);
+        mins = mins % 60;
+        if (hrs > 10) {
+          hrs = 10;
+          mins = 0;
+        }
+      }
+  
+      // Format with leading zeros
+      hourInput.value = hrs.toString().padStart(2, "0");
+      minuteInput.value = mins.toString().padStart(2, "0");
+  
+      validateStartButton(hrs, mins);
+    }
+  
+    //Validates the start button state
+    function validateStartButton(hrs, mins) {
+      if (mode === "stopwatch") {
+        startBtn.disabled = false;
+      } else {
+        startBtn.disabled = (hrs === 0 && mins === 0) || running || paused;
+      }
+    }
+  
+    // ================ EVENT LISTENERS ================
+    // Set up input restrictions for hour and minute inputs
+    [hourInput, minuteInput].forEach((input) => {
+      // Prevent non-numeric characters
+      input.addEventListener("keydown", (e) => {
+        if (["e", "+", "-", ".", ","].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+  
+      // Format and validate on input
+      input.addEventListener("input", () => {
+        formatAndValidateInputs();
+      });
+  
+      // Prevent cursor positioning anywhere except end
+      input.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        this.focus();
+        this.setSelectionRange(this.value.length, this.value.length);
+      });
+  
+      // Handle keyboard navigation
+      input.addEventListener('keydown', function(e) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home'].includes(e.key)) {
+          e.preventDefault();
+          this.setSelectionRange(this.value.length, this.value.length);
+        }
+      });
+  
+      // Ensure cursor stays at end after any input
+      input.addEventListener('input', function() {
+        formatAndValidateInputs();
+        setTimeout(() => {
+          this.setSelectionRange(this.value.length, this.value.length);
+        }, 0);
+      });
+  
+      // Handle focus to ensure cursor at end
+      input.addEventListener('focus', function() {
+        setTimeout(() => {
+          this.setSelectionRange(this.value.length, this.value.length);
+        }, 0);
+      });
+    });
+  
+    // Timer icon click handler
+    document.getElementById("timer-icon").onclick = (e) => {
+      e.stopPropagation();
+      const popup = document.getElementById("timer-popup");
+  
+      if (!running && !paused) {
+        setMode("stopwatch");
+        popup.style.display = popup.style.display === "block" ? "none" : "block";
+      } else {
+        document.getElementById("timer-bar").style.display = "flex";
+        document.getElementById("timer-icon").style.display = "none";
+        popup.style.display = "none";
+      }
+    };
+  
+    // Pause button click handler
+    document.getElementById("pause-timer").onclick = () => {
+      const pauseBtn = document.getElementById("pause-timer");
+      if (running) {
+        clearInterval(timerInterval);
+        running = false;
+        paused = true;
+        pauseBtn.innerText = "▶";
+        pauseBtn.title = "Resume";
+      } else {
+        running = true;
+        paused = false;
+        pauseBtn.innerText = "❚❚";
+        pauseBtn.title = "Pause";
+  
+        timerInterval = setInterval(() => {
+          if (mode === "stopwatch") {
+            elapsed++;
+            updateDisplay(elapsed);
+          } else {
+            countdown--;
+            updateDisplay(countdown);
+            if (countdown <= 0) {
+              clearInterval(timerInterval);
+              vscode.postMessage({ event: "time_up" });
+            }
+          }
+        }, 1000);
+      }
+      updateStartButtonText();
+    };
+  
+    // Reset button click handler
+    document.getElementById("reset-timer").onclick = (e) => {
+      e.stopPropagation();
+      const popup = document.getElementById("timer-popup");
+      popup.style.display = "block";
+      document.getElementById("timer-bar").style.display = "none";
+      document.getElementById("timer-icon").style.display = "block";
+  
+      updateStartButtonText();
+      startBtn.classList.add("danger");
+      startBtn.onclick = (e) => {
+        e.stopPropagation();
+        stopTimer();
+        resetStartBtnUI();
+      };
+    };
+  
+    // Collapse button click handler
+    document.getElementById("collapse-timer").onclick = () => {
+      document.getElementById("timer-bar").style.display = "none";
+      document.getElementById("timer-icon").style.display = "block";
+    };
+  
+    // Document click handler for closing popup
+    document.addEventListener("click", (e) => {
+      const popup = document.getElementById("timer-popup");
+      const icon = document.getElementById("timer-icon");
+  
+      if (popup.style.display === "block" && !popup.contains(e.target) && e.target !== icon) {
+        popup.style.display = "none";
+      }
+    });
+  
+    // Mode button click handlers
+    modeStopwatchBtn.onclick = () => handleModeSwitch("stopwatch");
+    modeTimerBtn.onclick = () => handleModeSwitch("timer");
+    startBtn.onclick = handleStart;
+  
+    // ================ INITIAL SETUP ================
+    setMode("stopwatch");
+    formatAndValidateInputs();
+  </script>

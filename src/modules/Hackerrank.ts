@@ -149,6 +149,7 @@ export default class Hackerrank {
       authorName: responseData.model.author_name,
       authorAvatar: responseData.model.author_avatar,
       languagesBoilerplate: {},
+      timerUI: ""
     };
 
     for (let lang of responseData.model.languages) {

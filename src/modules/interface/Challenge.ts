@@ -15,4 +15,5 @@ export default interface IChallenge {
   authorName: string;
   authorAvatar: string;
   languagesBoilerplate: Record<string, string>;
+  timerUI: string;
 }
